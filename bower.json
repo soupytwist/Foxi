@@ -1,0 +1,22 @@
+{
+  "name": "foxi",
+  "version": "0.0.0",
+  "authors": [
+    "Nick S <nicks@fastmail.fm>"
+  ],
+  "description": "Kodi/XBMC remote control for Firefox OS.",
+  "license": "GPLv3",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "handlebars": "~2.0.0",
+    "building-blocks": "gh-pages",
+    "gaia-icons": "gaia-components/gaia-icons#~0.7.3"
+  }
+}

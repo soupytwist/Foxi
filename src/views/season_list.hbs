@@ -1,0 +1,14 @@
+<ul id="season-list" class="season-list">
+  {{#each seasons}}
+  <li class="season-list-item">
+    <a data-show-id="{{tvshowid}}" data-season="{{season}}" href="#">
+      <aside class="season-banner">
+        {{img_season_art}}
+      </aside>
+      <p class="season-label">
+        Season {{season}}
+      </p>
+    </a>
+  </li>
+  {{/each}}
+</ul>

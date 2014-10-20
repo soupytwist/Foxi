@@ -1,0 +1,21 @@
+{
+  "name": "Foxi",
+  "description": "Firefox OS Remote for Kodi",
+  "launch_path": "/index.html",
+  "developer": {
+    "name": "Nick Smith",
+    "url": "http://nicks.io"
+  },
+  "type": "privileged",
+  "permissions": {
+    "storage": {},
+    "settings": {
+      "access": "readwrite"
+    }
+  },
+  "icons": {
+    "128": "/icons/foxi_128.png",
+    "60": "/icons/fox_60.png"
+  },
+  "default_locale": "en"
+}

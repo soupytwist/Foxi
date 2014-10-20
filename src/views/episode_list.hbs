@@ -1,0 +1,19 @@
+<ul id="episode-list" class="banner-list">
+  {{#each episodes}}
+  <li class="episode-list-item">
+    <a href="#" data-libraryid="{{episodeid}}">
+      <aside class="episode-banner">
+        {{img_episode_art}}
+      </aside>
+      <div class="other-side">
+        <p class="episode-number">
+          Episode {{episode}}
+        </p>
+        <p class="episode-title">
+          {{title}}
+        </p>
+      </div>
+    </a>
+  </li>
+  {{/each}}
+</ul>
