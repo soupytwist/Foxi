@@ -30,7 +30,7 @@ module.exports = function(grunt) {
             'manifest.webapp',
           ], dest: 'dist/' },
           { expand: true, cwd:'bower_components', src: [
-            'building-blocks/{*.css,images/**,fonts/**,style/**}',
+            'building-blocks/{*.css,images/**,style/*.css,style/{buttons,confirm,drawer,headers,lists,srcolling,seekbars,status}/**}',
             'zepto/zepto.min.js',
             'gaia-icons/**'
           ], dest: 'dist/' },
