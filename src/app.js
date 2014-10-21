@@ -6,13 +6,11 @@ window.onload = function() {
 
   if (localStorage.cfg_host && localStorage.cfg_port) {
     // If we have a saved connection, reconnect
-    api.rpc.connect(localStorage.cfg_host, localStorage.cfg_port, function() {
-      cards.TVSHOWS.activate();
-    });
+    cards.SETTINGS.tryConnect();
 
   } else {
     // Prompt the user to enter the host information
-    showConnectForm();
+    cards.SETTINGS.activate();
   }
 
   $("#nowplaying-button").click(function() {
@@ -20,11 +18,6 @@ window.onload = function() {
   });
 };
 
-
-function showNowPlaying() {
-  if ($("#card-nowplaying").hasClass("card-active")) {
-    return;
-  }
 
 /*
   $("#volume-bar").change(function() {
@@ -38,7 +31,6 @@ function showNowPlaying() {
   api.Application.GetProperties({ properties: ['volume'] }).then(function(data) {
     $("#volume-bar").val(String(data.result.volume)).removeAttr('disabled');
   });
-*/
   api.Application.GetProperties({ properties: ['volume'] }).then(function(data) {
     $('#card-nowplaying').html(templates.volume({ episode: episode, volume: data.result.volume }));
     $("#volume-indicator").addClass('fade');
@@ -70,18 +62,4 @@ function showNowPlaying() {
 
   showBackButton(showTVShowList);
 }
-
-
-function showConnectForm() {
-  $('#main').html(templates.cfg_form());
-
-  $("#cfg-connect-btn").on('click', function() {
-    var host = $("#cfg-host-field").val();
-    var port = $("#cfg-port-field").val();
-
-    api.rpc.connect(host, port, function() {
-      localStorage.cfg_host = host;
-      localStorage.cfg_port = port;
-    });
-  });
-}
+*/

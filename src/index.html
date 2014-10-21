@@ -3,7 +3,7 @@
   <head>
     <title>Foxi</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
     <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="zepto/zepto.min.js"></script>
     <link rel="manifest" href="manifest.webapp">
@@ -20,7 +20,6 @@
     <link rel="stylesheet" type="text/css" href="building-blocks/style/scrolling.css" >
     <link rel="stylesheet" type="text/css" href="building-blocks/style/confirm.css" >
     <link rel="stylesheet" type="text/css" href="building-blocks/style/action_menu.css" >
-    <link rel="stylesheet" type="text/css" href="building-blocks/style/progress_activity.css" >
     <link rel="stylesheet" type="text/css" href="building-blocks/style/tabs.css" >
     <link rel="stylesheet" type="text/css" href="building-blocks/style/value_selector.css" >
     <link rel="stylesheet" type="text/css" href="building-blocks/style/input_areas.css" >
@@ -33,7 +32,8 @@
         <menu type="toolbar">
           <button id="nowplaying-button" data-icon="play-circle"></button>
         </menu>
-        <button id="back-button"><span class="icon icon-back">back</span></button>
+        <button id="back-button" data-icon="back" style="display: none"></button>
+        <button id="settings-button" data-icon="settings" style="display: none"></button>
         <h1>Foxi</h1>
       </header>
       <header id="subheader">
@@ -41,7 +41,8 @@
       </header>
 
       <div id="main" role="main">
-        <div id="card-tv-shows" class="card scrollable"></div>
+        <div id="card-settings" class="card left"></div>
+        <div id="card-tv-shows" class="card scrollable right"></div>
         <div id="card-seasons" class="card scrollable right"></div>
         <div id="card-episodes" class="card scrollable right"></div>
         <div id="card-nowplaying" class="card right"></div>

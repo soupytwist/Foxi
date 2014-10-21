@@ -5,6 +5,7 @@ var state = require("./state");
 
 var CARDNUM = {
   NONE: -1,
+  SETTINGS: 0,
   TVSHOWS: 1,
   SEASONS: 2,
   EPISODES: 3,
@@ -16,6 +17,31 @@ var CARDS = {};
 // UI HELPERS ------------------------------------------------------------------
 function hideBackButton() {
   $("#back-button").hide();
+}
+
+
+function hideSettingsButton() {
+  $("#settings-button").hide();
+}
+
+
+function showBackButton(action) {
+  hideSettingsButton();
+  if (action) {
+    $("#back-button").show().off('click').on('click', action);
+  } else {
+    $("#back-button").show();
+  }
+}
+
+
+function showSettingsButton(action) {
+  hideBackButton();
+  if (action) {
+    $("#settings-button").show().off('click').on('click', action);
+  } else {
+    $("#settings-button").show();
+  }
 }
 
 
@@ -38,14 +64,6 @@ function setSubheader(text) {
   $("#app").addClass("subheader-visible");
 }
 
-
-function showBackButton(action) {
-  if (action) {
-    $("#back-button").show().off('click').on('click', action);
-  } else {
-    $("#back-button").show();
-  }
-}
 
 // HANDLEBARS HELPERS ----------------------------------------------------------
 function getImageUrl(img) {
@@ -131,6 +149,9 @@ TVShowsCard.prototype.show = function() {
   setHeader();
   setSubheader();
   hideBackButton();
+  showSettingsButton(function() {
+    CARDS.SETTINGS.activate();
+  });
 };
 
 TVShowsCard.prototype.load = function() {
@@ -296,9 +317,48 @@ NowPlayingCard.prototype.load = function() {
   card.loaded = true;
 };
 
+
+// SETTINGS --------------------------------------------------------------------
+function SettingsCard() {
+  Card.call(this, CARDNUM.SETTINGS, "#card-settings");
+}
+SettingsCard.prototype = Object.create(Card.prototype);
+
+SettingsCard.prototype.show = function() {
+  state.toCard(this);
+  setHeader("Settings");
+  showBackButton(function() {
+    CARDS.TVSHOWS.activate();
+  });
+};
+
+SettingsCard.prototype.load = function() {
+  var card = this;
+  card.render('settings', { host: localStorage.cfg_host, port: localStorage.cfg_port });
+
+  $("#cfg-connect-btn").on('click', function() {
+    var host = $("#cfg-host-field").val();
+    var port = $("#cfg-port-field").val();
+    localStorage.cfg_host = host;
+    localStorage.cfg_port = port;
+    card.tryConnect();
+  });
+
+  this.show();
+};
+
+SettingsCard.prototype.tryConnect = function() {
+  // TODO rpc.connect should return a Promise
+  api.rpc.connect(localStorage.cfg_host, localStorage.cfg_port, function() {
+    CARDS.TVSHOWS.activate();
+  });
+};
+
+
 CARDS.TVSHOWS = new TVShowsCard();
 CARDS.SEASONS = new SeasonsCard();
 CARDS.EPISODES = new EpisodesCard();
 CARDS.NOWPLAYING = new NowPlayingCard();
+CARDS.SETTINGS = new SettingsCard();
 
 module.exports = CARDS;

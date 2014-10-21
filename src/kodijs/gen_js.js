@@ -178,7 +178,7 @@ function gen_tree(tree, i) {
 fs.writeFile('build/rpcapi.js', _.flatten([
   "var rpc = require('./kodijs/rpc');",
   "",
-  "module.exports.api = {",
+  "module.exports = {",
   gen_tree(M, 1),
   "};",
   "",
