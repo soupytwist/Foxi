@@ -136,7 +136,7 @@ a {
 }
 
 .card {
-  transition: transform 500ms ease, opacity 500ms ease;
+  transition: transform 500ms ease 100ms, opacity 500ms ease 100ms;
   transform: perspective(360px) rotateY(0deg);
   transform-origin: -15% 50% 0px;
   backface-visibility: hidden;
@@ -145,6 +145,10 @@ a {
   z-index: 20;
   opacity: 1;
   width: 100%;
+
+  &.subheader-card {
+    height: ~"calc(100% - 5rem - 34px)";
+  }
 
   &.scrollable {
     overflow-x: hidden;
@@ -164,9 +168,6 @@ a {
   }
 }
 
-.subheader-visible .card {
-  height: ~"calc(100% - 5rem - 34px)";
-}
 #header, #subheader, #footer {
   z-index: 50;
 }
