@@ -65,7 +65,10 @@ module.exports = function(grunt) {
           'dist/app.js': ['build/app.js'],
         },
         options: {
-          transform: ['debowerify']
+          alias: ['./bower_components/handlebars/handlebars.min.js:handlebars']
+        },
+        browserifyOptions: {
+          detectGlobals: false
         }
       }
     },

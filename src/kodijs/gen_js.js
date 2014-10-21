@@ -94,9 +94,9 @@ function gen_method(name, method) {
     var apiName = "api_"+name.split('.').slice(0,-1).join('_');
     
     var functionLines = [];
-    functionLines.push(apiName + "." + shortName + " = function(params) {");
+    functionLines.push(shortName + ": function(params) {");
     functionLines = functionLines.concat(gen_method_body(name, method));
-    functionLines.push('};');
+    functionLines.push('},');
 
     return doc.concat(functionLines);
 }
@@ -140,57 +140,47 @@ function wrap_lines(str, width) {
     return lines;
 }
 
+var M = {};
 
-function gen_method_header(fname) {
-  var apiName = "api_"+fname.replace('.','_');
-    return [
-        "var rpc = require('../rpc');",
-        "",
-        "var " + apiName + " = {};",
-    ];
+function store(fullPath, d) {
+  var path = fullPath.split('.');
+  var name = path.slice(-1)[0];
+  var tree = M;
+  _.each(path.slice(0, -1), function(sub) {
+    if (!tree[sub]) {
+      tree[sub] = {};
+    }
+    tree = tree[sub];
+  });
+  tree[name] = d;
 }
-
-
-function gen_method_footer(fname) {
-    var apiName = "api_"+fname.replace('.','_');
-    return [
-        "module.exports = " + apiName + ";",
-    ];
-}
-
-
-var methodFiles = {};
-
 
 _.each(data.result.methods, function(method, name) {
-    var path = name.split('.');
-    var fname = path.slice(0,-1).join('.');
-    var mname = path.slice(-1);
-    methodFiles[fname] = (methodFiles[fname]||[]).concat([''], gen_method(name, method));
+    store(name, gen_method(name, method));
 });
 
-
-fs.exists('build/kodijs/methods', function(exists) {
-  if (!exists) {
-    fs.mkdir('build/kodijs/methods');
-  }
-
-  _.each(methodFiles, function(lines, fname) {
-      fs.writeFile("build/kodijs/methods/" + fname + ".js", 
-          _.flatten([
-              gen_method_header(fname),
-              lines,
-              '',
-              gen_method_footer(fname)
-          ]).join('\n')
-      );
+function gen_tree(tree, i) {
+  var lines = [];
+  _.each(tree, function(v, key) {
+    lines.push('');
+    if (_.isArray(v)) {
+      lines = lines.concat(_.map(v, indent.bind(this, i)));
+    } else {
+      lines.push(indent(i, key + ": {"));
+      lines = lines.concat(gen_tree(v, i+1));
+      lines.push(indent(i, "},"));
+    }
+    lines.push('');
   });
+  return lines;
+}
 
-
-  fs.writeFile("build/rpcapi.js", _.flatten([
-      _.map(methodFiles, function(lines, fname) {
-          return "module.exports."+fname+" = require('./kodijs/methods/" + fname + ".js');";
-      }),
-      "module.exports.rpc = require('./kodijs/rpc');"
-  ]).join('\n'));
-});
+fs.writeFile('build/rpcapi.js', _.flatten([
+  "var rpc = require('./kodijs/rpc');",
+  "",
+  "module.exports.api = {",
+  gen_tree(M, 1),
+  "};",
+  "",
+  "module.exports.rpc = rpc;"
+]).join('\n'));
