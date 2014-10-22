@@ -341,6 +341,7 @@ SettingsCard.prototype.load = function() {
     var port = $("#cfg-port-field").val();
     localStorage.cfg_host = host;
     localStorage.cfg_port = port;
+    $("#cfg-connect-btn").removeClass("recommend");
     card.tryConnect();
   });
 
@@ -349,9 +350,17 @@ SettingsCard.prototype.load = function() {
 
 SettingsCard.prototype.tryConnect = function() {
   // TODO rpc.connect should return a Promise
-  api.rpc.connect(localStorage.cfg_host, localStorage.cfg_port, function() {
-    CARDS.TVSHOWS.activate();
-  });
+  api.rpc.connect(localStorage.cfg_host, localStorage.cfg_port).then(
+      // Success
+      function() {
+        CARDS.TVSHOWS.activate();
+      },
+      // Error
+      function() {
+        $("#cfg-connect-btn").addClass("recommend");
+        CARDS.SETTINGS.activate();
+      }
+  );
 };
 
 

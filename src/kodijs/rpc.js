@@ -4,28 +4,47 @@ var ws;
 var promises = {};
 var _ = require("lodash");
 
-function connect(host, port, onopen) {
-  ws = new WebSocket('ws://'+host+':'+port+'/jsonrpc');
+function connect(host, port) {
 
-  ws.onopen = onopen;
-
-  ws.onmessage = function(evt) {
-    var data = JSON.parse(evt.data);
-    var id = data.id || data.method;
-    console.log("<-- " + id + " : " + evt.data);
-    var p = promises[id];
-    if (p) {
-      console.log("Resolving [" + id + "]");
-      p.resolve(data);
-      delete promises[id];
-    } else {
-      console.error("Unhandled messaeg [" + id + "]; Awaiting: [" + Object.keys(promises).join(', ') + "]");
+  /*
+   * Return a promise that the connection will be established.
+   * When the connection is successful, event handler are setup>
+   */
+  return new Promise(function(resolve, reject) {
+    if (!host || !port) {
+      reject();
+      return;
     }
-  };
 
-  ws.onerror = function(err) {
-    console.error(err);
-  };
+    var connection = new WebSocket('ws://'+host+':'+port+'/jsonrpc');
+    connection.onerror = function() {
+      console.log("Connection refused");
+      reject();
+    };
+    connection.onopen = function() {
+      ws = connection;
+
+      ws.onmessage = function(evt) {
+        var data = JSON.parse(evt.data);
+        var id = data.id || data.method;
+        console.log("<-- " + id + " : " + evt.data);
+        var p = promises[id];
+        if (p) {
+          console.log("Resolving [" + id + "]");
+          p.resolve(data);
+          delete promises[id];
+        } else {
+          console.error("Unhandled messaeg [" + id + "]; Awaiting: [" + Object.keys(promises).join(', ') + "]");
+        }
+      };
+
+      ws.onerror = function(err) {
+        console.error(err);
+      };
+
+      resolve();
+    };
+  });
 }
 
 function send_msg(method, params) {

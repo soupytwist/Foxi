@@ -8,10 +8,6 @@
   },
   "type": "privileged",
   "permissions": {
-    "storage": {},
-    "settings": {
-      "access": "readwrite"
-    }
   },
   "icons": {
     "128": "/icons/foxi_128.png",
