@@ -2,6 +2,7 @@ var fs = require('fs');
 var TABWIDTH=2;
 var COLWIDTH=80;
 var TAB=repeat(' ',TABWIDTH);
+var VALIDATION=true; // for debugging
 
 var _ = require('lodash');
 var data = require('./data');
@@ -17,7 +18,7 @@ function gen_method_docs(name, method) {
         lines.push('');
         _.each(method.params, function(param) {
             var paramLines = parse_type(param);
-            paramLines[0] = '@param ' + paramLines[0];
+            paramLines[0] = '@param ' + param.name + ": " + paramLines[0];
             lines = lines.concat(paramLines);
         });
     }
@@ -88,6 +89,61 @@ function parse_array(a) {
 }
 
 
+function check_integer(type, x) {
+    var cond = ['typeof '+x+' === "number"'];
+    if ('minimum' in type) {
+        cond.push(x+" >= " + type.minimum);
+    }
+    if ('maximum' in type) {
+        cond.push(x+" <= " + type.maximum);
+    }
+    return "(" + cond.join(" && ") + ")";
+}
+
+
+function gen_validate_params(methodName, method) {
+    var lines = [];
+
+    if (method.params) {
+        _.each(method.params, function(param) {
+
+            var name = param.name;
+            var check = [];
+            if (!param.required) {
+                check.push('validate.required(params, "'+name+'");');
+            }
+            if (param.type) {
+                var t;
+                switch (param.type) {
+                    case 'object':
+                        check.push("// object");
+                        break;
+                    case 'array':
+                        check.push("// array");
+                        break;
+                    case 'integer':
+                        t = _.pick(param, ["minimum", "maximum"]);
+                        check.push('validate.integer(params, "'+name+'", '+JSON.stringify(t)+');');
+                        break;
+                    case 'string':
+                        t = _.pick(param, ["minLength", "maxLength"]);
+                        check.push('validate.string(params, "'+name+'", '+JSON.stringify(t)+');');
+                        break;
+                    default:
+                        check.push("// " + param.type);
+                }
+            } else if (param.$ref) {
+                //return ['$' + param.$ref];
+            }
+
+            if (check) {
+                lines = lines.concat(check);
+            }
+        });
+    }
+    return _.map(lines, indent.bind(this, 1));
+}
+
 function gen_method(name, method) {
     var shortName = name.split('.').pop();
     var doc = gen_method_docs(name, method);
@@ -95,6 +151,11 @@ function gen_method(name, method) {
     
     var functionLines = [];
     functionLines.push(shortName + ": function(params) {");
+
+    if (VALIDATION) {
+        functionLines = functionLines.concat(gen_validate_params(name, method));
+    }
+
     functionLines = functionLines.concat(gen_method_body(name, method));
     functionLines.push('},');
 
@@ -177,6 +238,7 @@ function gen_tree(tree, i) {
 
 fs.writeFile('build/rpcapi.js', _.flatten([
   "var rpc = require('./kodijs/rpc');",
+  "var validate = require('./kodijs/validate');",
   "",
   "module.exports = {",
   gen_tree(M, 1),
