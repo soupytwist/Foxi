@@ -236,9 +236,9 @@ EpisodesCard.prototype.load = function() {
           episodeid: itemid, properties: ['title', 'showtitle', 'thumbnail', 'art']
         }).then(function(data) {
           state.episode = data.result.episodedetails;
-          state.episode.art.thumb = decodeURIComponent(episode.art.thumb.substr(8, episode.art.thumb.length - 9));
+          state.episode.art.thumb = decodeURIComponent(state.episode.art.thumb.substr(8, state.episode.art.thumb.length - 9));
           $("#card-nowplaying").css({
-            'background-image': 'url("'+episode.art.thumb+'")',
+            'background-image': 'url("'+state.episode.art.thumb+'")',
             'background-size': '100% auto'
           });
         });
@@ -284,7 +284,7 @@ NowPlayingCard.prototype.load = function() {
   card.render('nowplaying', { show: state.show, season: state.season });
 
   getActivePlayer(function(playerid) {
-    api.Player.GetProperties({ properties: ['speed'] }).then(function(data) {
+    api.Player.GetProperties({ playerid: playerid, properties: ['speed'] }).then(function(data) {
       if (data.result.speed === 0) {
         $("#nowplaying-playpause").attr("data-icon", "play");
       } else {

@@ -1,43 +1,73 @@
+var type = require("./validate_types");
 
-function required(params, name) {
-    var x = params[name];
+function required(x, name) {
     if (x === undefined)  {
-        throw name + " is required";
+        throw new Error(name + " is required");
     }
 }
 
-function integer(params, name, t) {
-    var x = params[name];
-    if (x === undefined)
-        return;
-    number(params, name, t);
+function undefinedOrNull(x, name, t) {
+  if (x !== undefined && x !== null) {
+    throw new Error(name + " should be null");
+  }
 }
 
-function number(params, name, t) {
+function integer(x, name, t) {
+    if (x === undefined)
+        return;
+    number(x, name, t);
+}
+
+function number(x, name, t) {
     if (x === undefined)
         return;
     if (typeof x !== 'number') {
-        throw name + " must be a number; got: " + x;
+        throw new Error(name + " must be a number; got: " + x);
     }
     if (t.minimum !== undefined && x < t.minimum) {
-        throw name + " must be at least " + t.min + "; actual: " + x;
+        throw new Error(name + " must be at least " + t.min + "; actual: " + x);
     }
     if (t.maximum !== undefined && x > t.maximum) {
-        throw name + " must be at most " + t.max + "; actual: " + x;
+        throw new Error(name + " must be at most " + t.max + "; actual: " + x);
     }
 }
 
-function string(params, name, t) {
+function string(x, name, t) {
     if (x === undefined)
         return;
     if (typeof x !== 'string') {
-        throw name + " must be a string; got: " + x;
+        throw new Error(name + " must be a string; got: " + x);
     }
     if (t.minLength !== undefined && x.length < t.minLength) {
-        throw name + " must be at least " + t.min + "; actual: " + x.length;
+        throw new Error(name + " must be at least " + t.min + "; actual: " + x.length);
     }
     if (t.maxLength !== undefined && x.length > t.maxLength) {
-        throw name + " must be at most " + t.max + "; actual: " + x.length;
+        throw new Error(name + " must be at most " + t.max + "; actual: " + x.length);
+    }
+    if (t.enums !== undefined && t.enums.indexOf(x) === -1) {
+      throw new Error(name + " must be one of the values: [" + t.enums.join(',') + "]");
+    }
+}
+
+function boolean(x, name, t) {
+  if (x === undefined)
+    return;
+  if (typeof x !== 'boolean') {
+    throw new Error(name + " must be a boolean; got: " + x);
+  }
+}
+
+function array(x, name, t) {
+    if (x === undefined)
+        return;
+    if (x === undefined || x.length === undefined) {
+        throw new Error(name + " must be an array; got: " + (typeof x));
+    }
+    if (t.minItems !== undefined && x.length < t.minItems) {
+        throw new Error(name + " must have at least " + t.min + " items; actual: " + x.length);
+    }
+    if (t.maxItems !== undefined && x.length > t.maxItems) {
+        throw new Error(name + " must have at most " + t.max + " items; actual: " + x.length);
     }
 }
 
@@ -45,3 +75,5 @@ module.exports.required = required;
 module.exports.integer = integer;
 module.exports.number = number;
 module.exports.string = string;
+module.exports.array = array;
+module.exports.type = type;
