@@ -72,6 +72,8 @@ function array(x, name, t) {
 }
 
 module.exports.required = required;
+module.exports.undefinedOrNull = undefinedOrNull;
+module.exports.boolean = boolean;
 module.exports.integer = integer;
 module.exports.number = number;
 module.exports.string = string;

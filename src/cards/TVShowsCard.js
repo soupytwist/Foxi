@@ -23,14 +23,21 @@ TVShowsCard.prototype.show = function() {
 
 TVShowsCard.prototype.load = function() {
   var card = this;
-  api.VideoLibrary.GetTVShows({ properties: ['art', 'year'] }).then(function(data) {
+  api.VideoLibrary.GetTVShows({
+    properties: ['title', 'art', 'year'],
+    sort: {
+      order: 'ascending',
+      method: 'title'
+    }
+  }).then(function(data) {
+
     card.render('tv_show_list', data.result);
     $("#tv-show-list .banner-list-item a").click(function() {
       var showId = parseInt($(this).attr('data-show-id'));
       var showName = $(this).attr('data-show-name');
       state.show = {
         tvshowid: showId,
-        label: showName
+        title: showName,
       };
       // We have to reload when a new show is selected
       CARDS.SEASONS.activate(true);

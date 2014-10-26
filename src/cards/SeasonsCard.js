@@ -13,7 +13,7 @@ SeasonsCard.prototype = Object.create(Card.prototype);
 
 SeasonsCard.prototype.show = function() {
   state.toCard(this);
-  util.setHeader(state.show.label);
+  util.setHeader(state.show.title);
   util.setSubheader();
   util.showBackButton(function() {
     CARDS.TVSHOWS.activate();
@@ -22,8 +22,14 @@ SeasonsCard.prototype.show = function() {
 
 SeasonsCard.prototype.load = function() {
   var card = this;
-  api.VideoLibrary.GetSeasons({ tvshowid: state.show.tvshowid,
-    properties: ['tvshowid', 'season', 'art'] }).then(function(data) {
+  api.VideoLibrary.GetSeasons({
+      tvshowid: state.show.tvshowid,
+      properties: ['tvshowid', 'season', 'art'],
+      sort: {
+        order: 'ascending',
+        method: 'season'
+      }
+  }).then(function(data) {
 
     card.render('season_list', data.result);
     $("#season-list .season-list-item a").click(function() {
