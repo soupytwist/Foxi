@@ -87,7 +87,7 @@ module.exports = function(grunt) {
         tasks: ['copy:build', 'browserify', 'copy:dist']
       },
       scripts: {
-        files: ['src/*.js'],
+        files: ['src/*.js', 'src/cards/*.js'],
         tasks: ['jshint', 'copy:build', 'browserify', 'copy:dist']
       },
       apiscripts: {

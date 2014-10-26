@@ -1,0 +1,70 @@
+function hideBackButton() {
+  $("#back-button").hide();
+}
+
+
+function hideSettingsButton() {
+  $("#settings-button").hide();
+}
+
+
+function showBackButton(action) {
+  hideSettingsButton();
+  if (action) {
+    $("#back-button").show().off('click').on('click', action);
+  } else {
+    $("#back-button").show();
+  }
+}
+
+
+function showSettingsButton(action) {
+  hideBackButton();
+  if (action) {
+    $("#settings-button").show().off('click').on('click', action);
+  } else {
+    $("#settings-button").show();
+  }
+}
+
+
+function setHeader(text) { 
+  if (!text) {
+    $("#header > h1").text("Foxi");
+    return;
+  }
+  $("#header > h1").text(text);
+  $("#header").show();
+}
+
+
+function setSubheader(text) { 
+  if (!text) {
+    $("#app").removeClass("subheader-visible");
+    return;
+  }
+  $("#subheader > h2").text(text);
+  $("#app").addClass("subheader-visible");
+}
+
+
+// HANDLEBARS HELPERS ----------------------------------------------------------
+function getImageUrl(img) {
+  if (img.startsWith('image://')) {
+    var src = decodeURIComponent(img.substr(8, img.length-9));
+    if (src.startsWith('/')) {
+      src = 'http://' + localStorage.cfg_host + ":8080/vfs/" + encodeURIComponent(src);
+    }
+    return src;
+  }
+  return null;
+}
+
+
+module.exports.hideBackButton = hideBackButton;
+module.exports.hideSettingsButton = hideSettingsButton;
+module.exports.showBackButton = showBackButton;
+module.exports.showSettingsButton = showSettingsButton;
+module.exports.setHeader = setHeader;
+module.exports.setSubheader = setSubheader;
+module.exports.getImageUrl = getImageUrl;

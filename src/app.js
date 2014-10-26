@@ -1,6 +1,6 @@
 var api = require("./rpcapi");
 var state = require("./state");
-var cards = require("./cards");
+var CARDS = require("./cards/cards").CARDS;
 
 window.onload = function() {
 
@@ -15,15 +15,15 @@ window.onload = function() {
 
   if (localStorage.cfg_host && localStorage.cfg_port) {
     // If we have a saved connection, reconnect
-    cards.SETTINGS.tryConnect();
+    CARDS.SETTINGS.tryConnect();
 
   } else {
     // Prompt the user to enter the host information
-    cards.SETTINGS.activate();
+    CARDS.SETTINGS.activate();
   }
 
   $("#nowplaying-button").click(function() {
-    cards.NOWPLAYING.activate();
+    CARDS.NOWPLAYING.activate();
   });
 };
 
