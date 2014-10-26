@@ -4,6 +4,15 @@ var cards = require("./cards");
 
 window.onload = function() {
 
+  $(".card").on("transitionend", function() {
+    $("#main").removeClass("animating");
+  });
+
+  api.rpc.subscribe("Application.OnVolumeChanged", function(payload) {
+    //state.player.volume.update(payload.data.volume);
+    state.player.muted.update(payload.data.muted);
+  });
+
   if (localStorage.cfg_host && localStorage.cfg_port) {
     // If we have a saved connection, reconnect
     cards.SETTINGS.tryConnect();

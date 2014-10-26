@@ -2,6 +2,7 @@ var Handlebars = require('handlebars');
 var templates = require("./templates")(Handlebars);
 var api = require("./rpcapi");
 var state = require("./state");
+var _ = require("lodash");
 
 var CARDNUM = {
   NONE: -1,
@@ -129,6 +130,7 @@ Card.prototype.activate = function(forceReload) {
   }
   this.show();
 };
+Card.prototype.deactivate = function() {};
 
 Card.prototype.render = function(tplName, data) {
   console.log("Rendering: " + tplName);
@@ -230,18 +232,7 @@ EpisodesCard.prototype.load = function() {
     $("#episode-list .episode-list-item a").click(function() {
       var itemid = parseInt($(this).attr('data-libraryid'));
       api.Player.Open({ item: { episodeid: itemid } }).then(function() {
-
         CARDS.NOWPLAYING.activate(true);
-        api.VideoLibrary.GetEpisodeDetails({
-          episodeid: itemid, properties: ['title', 'showtitle', 'thumbnail', 'art']
-        }).then(function(data) {
-          state.episode = data.result.episodedetails;
-          state.episode.art.thumb = decodeURIComponent(state.episode.art.thumb.substr(8, state.episode.art.thumb.length - 9));
-          $("#card-nowplaying").css({
-            'background-image': 'url("'+state.episode.art.thumb+'")',
-            'background-size': '100% auto'
-          });
-        });
       });
     });
 
@@ -254,30 +245,80 @@ EpisodesCard.prototype.load = function() {
 // NOWPLAYING ------------------------------------------------------------------
 function NowPlayingCard() {
   Card.call(this, CARDNUM.NOWPLAYING, "#card-nowplaying");
+  this.subs = {};
 }
 NowPlayingCard.prototype = Object.create(Card.prototype);
 
 NowPlayingCard.prototype.show = function() {
   state.toCard(this);
   setHeader((state.show && state.show.label) ? state.show.label : "Now Playing");
-  setSubheader(state.season ? ("Season " + state.season)  : "");
+  setSubheader(state.season ? ("Season " + state.season)  : "Now Playing");
   showBackButton(function() {
     CARDS.TVSHOWS.activate();
   });
+  this.subs.nowplaying = state.nowplaying.subscribe(this.updateEpisode.bind(this));
+
+  //if (!state.nowplaying.val()) {
+    getActivePlayer(function(playerid) {
+      api.Player.GetItem({ playerid: playerid }).then(function(data) {
+        if (data.result.item.id) {
+          api.VideoLibrary.GetEpisodeDetails({
+            episodeid: data.result.item.id, properties: ['title', 'showtitle', 'plot', 'thumbnail', 'season']
+          }).then(function(data) {
+            state.nowplaying.update(data.result.episodedetails);
+          });
+        } else {
+          state.nowplaying.update({});
+        }
+      });
+    });
+  //}
 };
 
+NowPlayingCard.prototype.deactivate = function() {
+  this.subs.nowplaying.remove();
+};
 
 function getActivePlayer(cb) {
   api.Player.GetActivePlayers().then(function(data) {
-
     var players = data.result;
     if (!players) {
       return;
     }
-    var playerid = players.pop().playerid;
-    cb(playerid);
+    cb(_.first(players).playerid);
   });
 }
+
+
+NowPlayingCard.prototype.updateEpisode = function() {
+  var episode = state.nowplaying.val();
+  if (episode && episode.thumbnail) {
+    $("#nowplaying-thumb").attr('src', getImageUrl(episode.thumbnail));
+  } else {
+    $("#nowplaying-thumb").attr('src', "");
+  }
+  if (episode && episode.title) {
+    $("#nowplaying-episode-title").text(episode.title);
+  } else {
+    $("#nowplaying-episode-title").text("Title...");
+  }
+  if (episode && episode.plot) {
+    $("#nowplaying-episode-plot").text(episode.plot);
+  } else {
+    $("#nowplaying-episode-plot").text("Plot...");
+  }
+  if (episode && episode.showtitle) {
+    setHeader(episode.showtitle);
+  } else {
+    setHeader("Foxi");
+  }
+  if (episode && episode.season) {
+    setSubheader("Season " + episode.season);
+  } else {
+    setSubheader("Now Playing");
+  }
+};
+
 
 NowPlayingCard.prototype.load = function() {
   var card = this;
@@ -313,8 +354,22 @@ NowPlayingCard.prototype.load = function() {
     });
   });
 
+  this.subs.muted = state.player.muted.subscribe(function(muted) {
+    $("#nowplaying-volume").attr('data-icon', muted ? "mute" : "sound-max");
+  });
+
   card.show();
   card.loaded = true;
+};
+
+NowPlayingCard.prototype.deactivate = function() {
+  if (this.subs.muted) {
+    this.subs.muted.remove();
+  }
+};
+
+NowPlayingCard.prototype.update = function() {
+  $("#nowplaying-episode-title").text(state.nowplaying.title);
 };
 
 
@@ -349,7 +404,6 @@ SettingsCard.prototype.load = function() {
 };
 
 SettingsCard.prototype.tryConnect = function() {
-  // TODO rpc.connect should return a Promise
   api.rpc.connect(localStorage.cfg_host, localStorage.cfg_port).then(
       // Success
       function() {

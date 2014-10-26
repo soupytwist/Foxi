@@ -39,8 +39,7 @@ a {
   width: 100%;
 }
 
-.left img,
-.right img {
+#main.animating {
   image-rendering: -moz-crisp-edges;
   text-rendering: optimizeSpeed;
 }
@@ -188,6 +187,17 @@ a {
   top: 0;
   bottom: 32px;
   width: 100%;
+  color: white;
+  font-weight: normal;
+
+  #nowplaying-thumb {
+    width: 100%;
+  }
+
+  #nowplaying-episode-plot {
+    margin-bottom: 64px;
+    font-weight: lighter;
+  }
 }
 
 #nowplaying-controls {
@@ -202,9 +212,10 @@ a {
 }
 
 #nowplaying-controls > button {
-  width: 18%;
+  width: 20%;
   height: 44px;
   margin: 0;
+  padding: 0;
   text-align: center;
   background-color: black;
   color: white;
@@ -216,8 +227,6 @@ a {
   padding: 0;
   height: 44px;
   line-height: 44px;
-  float: left;
-  clear: none;
   top: 0;
   right: 0;
 }

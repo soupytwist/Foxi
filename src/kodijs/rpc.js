@@ -2,6 +2,7 @@ require('../es6-promise').polyfill();
 var ctr = 0;
 var ws;
 var promises = {};
+var subscriptions = {};
 var _ = require("lodash");
 
 function connect(host, port) {
@@ -26,15 +27,22 @@ function connect(host, port) {
 
       ws.onmessage = function(evt) {
         var data = JSON.parse(evt.data);
-        var id = data.id || data.method;
-        console.log("<-- " + id + " : " + evt.data);
-        var p = promises[id];
-        if (p) {
-          console.log("Resolving [" + id + "]");
+        console.log("<-- " + (data.id||"no-id") + " : " + (data.method||"no-method") + " : " + evt.data);
+
+        if (data.id in promises) {
+          console.log("Resolving promise [" + data.id + "]");
+          var p = promises[data.id];
           p.resolve(data);
-          delete promises[id];
+          delete promises[data.id];
+
+        } else if (data.method in subscriptions) {
+          console.log("Notifying subscription [" + data.method + "]");
+          var s = subscriptions[data.method];
+          s(data.params);
+        
         } else {
-          console.error("Unhandled messaeg [" + id + "]; Awaiting: [" + Object.keys(promises).join(', ') + "]");
+          console.error("Unhandled message [" + (data.id||"no-id") + " : " + (data.method||"no-method") +
+              "]; Awaiting: [" + Object.keys(promises).join(', ') + "]");
         }
       };
 
@@ -61,7 +69,7 @@ function send_msg(method, params) {
   if (params) {
     msg.params = params;
   }
-  console.log("-- " + JSON.stringify(msg));
+
   return new Promise(function(resolve, reject) {
     console.log("--> " + JSON.stringify(msg));
     promises[idStr] = {
@@ -72,5 +80,16 @@ function send_msg(method, params) {
   });
 }
 
+function subscribe(method, fct) {
+  subscriptions[method] = fct;
+}
+
+function unsubscribe(method) {
+  // TODO
+  delete subscriptions[method];
+}
+
 module.exports.connect = connect;
 module.exports.send_msg = send_msg;
+module.exports.subscribe = subscribe;
+module.exports.unsubscribe = unsubscribe;

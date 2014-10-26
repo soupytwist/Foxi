@@ -219,8 +219,7 @@ function gen_method(name, method) {
     functionLines.push(indent(1, "try {"));
     functionLines = functionLines.concat(_.map(gen_validate_params(method), indent.bind(this,2)));
     functionLines.push(indent(1, "} catch (validation_err) {"));
-    functionLines.push(indent(2, 'validation_err.description = "' + name + ': " + validation_err.description;'));
-    functionLines.push(indent(2, 'throw validation_err;'));
+    functionLines.push(indent(2, 'throw validation_err.message + "\\n" + validation_err.stack;'));
     functionLines.push(indent(1, "}"));
   }
 
