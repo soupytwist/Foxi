@@ -8,3 +8,4 @@ Currently working:
 * List TV Shows, Seasons and Episodes
 * Select an Episode to play
 * Play/Pause/Stop controls on Now Playing (limited)
+* View some episode details on the now playing screen
