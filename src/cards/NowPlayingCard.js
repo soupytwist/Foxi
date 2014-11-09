@@ -14,42 +14,62 @@ function NowPlayingCard() {
 NowPlayingCard.prototype = Object.create(Card.prototype);
 
 NowPlayingCard.prototype.show = function() {
+  var that = this;
+
   state.toCard(this);
   util.setHeader((state.show && state.show.label) ? state.show.label : "Now Playing");
   util.setSubheader(state.season ? ("Season " + state.season)  : "Now Playing");
   util.showBackButton(function() {
-    CARDS.TVSHOWS.activate();
+    if (state.lastCard) {
+      state.lastCard.activate();
+    } else {
+      CARDS.TVSHOWS.activate();
+    }
   });
   this.subs.nowplaying = state.nowplaying.subscribe(this.updateEpisode.bind(this));
+  this.subs.playpause = state.player.speed.subscribe(this.updatePlayPauseButton.bind(this));
+  this.subs.position = state.player.position.subscribe(this.updateSeekbar.bind(this));
+  this.subs.duration = state.player.duration.subscribe(this.updateSeekbar.bind(this));
+  this.subs.seektime = state.player.speed.subscribe(this.updateSeekTimer.bind(this));
 
   //if (!state.nowplaying.val()) {
-    getActivePlayer(function(playerid) {
+    var playerid = state.player.id.val();
+    if (playerid !== -1) {
       api.Player.GetItem({ playerid: playerid }).then(function(data) {
-        if (data.result.item.id) {
-          api.VideoLibrary.GetEpisodeDetails({
-            episodeid: data.result.item.id, properties: ['title', 'showtitle', 'plot', 'thumbnail', 'season']
-          }).then(function(data) {
-            state.nowplaying.update(data.result.episodedetails);
-          });
+        if (data.result && data.result.item.id) {
+          that.setNowPlayingEpisode(data.result.item.id);
         } else {
           state.nowplaying.update({});
         }
       });
-    });
+    }
   //}
 };
 
 NowPlayingCard.prototype.deactivate = function() {
   this.subs.nowplaying.remove();
+  this.subs.playpause.remove();
 };
 
-function getActivePlayer(cb) {
+function getActivePlayer() {
   api.Player.GetActivePlayers().then(function(data) {
     var players = data.result;
     if (_.isEmpty(players)) {
       return;
     }
-    cb(_.first(players).playerid);
+    state.player.id.update(_.first(players).playerid);
+  });
+}
+
+
+NowPlayingCard.prototype.setNowPlayingEpisode = function(id) {
+  // TODO Support other possible item types aside from episode
+  api.VideoLibrary.GetEpisodeDetails({
+    episodeid: id, properties: ['title', 'showtitle', 'plot', 'thumbnail', 'season', 'runtime', 'resume']
+  }).then(function(data) {
+    state.nowplaying.update(data.result.episodedetails);
+    state.player.position.update(data.result.episodedetails.resume.position || 0);
+    state.player.duration.update(data.result.episodedetails.runtime);
   });
 }
 
@@ -84,38 +104,98 @@ NowPlayingCard.prototype.updateEpisode = function() {
 };
 
 
+NowPlayingCard.prototype.updatePlayPauseButton = function() {
+  $("#nowplaying-playpause").attr("data-icon", state.player.speed.val() === 0 ? "play" : "pause");
+};
+
+
+NowPlayingCard.prototype.updateSeekTimer = function() {
+  var speed = state.player.speed.val();
+  if (speed === 0 && this.seekTimer) {
+    clearInterval(this.seekTimer);
+    delete this.seekTimer;
+  } else if (speed !== 0) {
+    if (this.seekTimer) {
+      clearInterval(this.seekTimer);
+    }
+    this.seekTimer = setInterval(function() {
+      var pos = state.player.position.val();
+      state.player.position.update(pos + 1);
+    }, 1000 * speed);
+  }
+};
+
+
+NowPlayingCard.prototype.updateSeekbar = function() {
+  var position = state.player.position.val();
+  var duration = state.player.duration.val();
+
+  if (position === -1 || duration === -1) {
+    $("#nowplaying-seek-cur").html("&ndash;");
+    $("#nowplaying-seek-end").html("&ndash;");
+    $("#nowplaying-seek-handler").css('left', '0%');
+    $("#nowplaying-seek").attr('aria-valuenow', '0');
+    $("#nowplaying-seek").attr('aria-valuemax', '0');
+  } else {
+    $("#nowplaying-seek-cur").html(seektime(position));
+    $("#nowplaying-seek-end").html(seektime(duration));
+    $("#nowplaying-seek-handler").css('left', (100.0 * position / duration)+'%');
+    $("#nowplaying-seek").attr('aria-valuenow', position);
+    $("#nowplaying-seek").attr('aria-valuemax', duration);
+  }
+};
+
+
+function seektime(secs) {
+  var x = secs;
+  var res = '';
+  var h = parseInt(x / 3600);
+  if (h > 0) {
+    res += h + ':';
+    x -= h * 3600;
+  }
+  var m = parseInt(x / 60);
+  if (m < 10) {
+    res += '0';
+  }
+  res += m + ':';
+  x -= m * 60;
+  if (x < 10) {
+    res += '0';
+  }
+  res += x;
+  return res;
+};
+
+
 NowPlayingCard.prototype.load = function() {
   var card = this;
   card.render('nowplaying', { show: state.show, season: state.season });
 
-  getActivePlayer(function(playerid) {
-    api.Player.GetProperties({ playerid: playerid, properties: ['speed'] }).then(function(data) {
-      if (data.result.speed === 0) {
-        $("#nowplaying-playpause").attr("data-icon", "play");
-      } else {
-        $("#nowplaying-playpause").attr("data-icon", "pause");
-      }
-    });
-  });
+  this.updatePlayPauseButton(state.player.speed.val());
 
   $("#nowplaying-playpause").on('click', function() {
-    getActivePlayer(function(playerid) {
-      api.Player.PlayPause({ playerid: playerid }).then(function(data) {
-        if (data.result.speed === 0) {
-          $("#nowplaying-playpause").attr("data-icon", "play");
-        } else {
-          $("#nowplaying-playpause").attr("data-icon", "pause");
-        }
-      });
-    });
+    var playerid = state.player.id.val();
+    if (playerid !== -1) {
+      api.Player.PlayPause({ playerid: playerid });
+    }
   });
 
   $("#nowplaying-stop").on('click', function() {
-    getActivePlayer(function(playerid) {
-      api.Player.Stop({ playerid: playerid }).then(function(data) {
-        $("#nowplaying-playpause").attr("data-icon", "play");
-      });
-    });
+    var playerid = state.player.id.val();
+    if (playerid !== -1) {
+      api.Player.Stop({ playerid: playerid });
+    }
+  });
+
+  $("#nowplaying-more").on('click', function() {
+    if ($("#nowplaying-controls").hasClass("expanded")) {
+      $("#nowplaying-controls").removeClass("expanded");
+      $("#nowplaying-more").attr('data-icon', 'dialpad');
+    } else {
+      $("#nowplaying-controls").addClass("expanded");
+      $("#nowplaying-more").attr('data-icon', 'dismiss-keyboard');
+    }
   });
 
   this.subs.muted = state.player.muted.subscribe(function(muted) {

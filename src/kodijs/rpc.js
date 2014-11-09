@@ -41,7 +41,7 @@ function connect(host, port) {
           s(data.params);
         
         } else {
-          console.error("Unhandled message [" + (data.id||"no-id") + " : " + (data.method||"no-method") +
+          console.warn("Unhandled message [" + (data.id||"no-id") + " : " + (data.method||"no-method") +
               "]; Awaiting: [" + Object.keys(promises).join(', ') + "]");
         }
       };

@@ -1,3 +1,9 @@
+
+@npc-rows:          3;
+@npc-row-height:    36px;
+@npc-row-sep:       @npc-row-height/3;
+@npc-full-height:   ((@npc-row-height + @npc-row-sep) * @npc-rows);
+
 a {
   color: white;
   text-decoration: none;
@@ -204,29 +210,55 @@ a {
   position: absolute;
   margin: 0;
   padding: 0;
-  bottom: 0;
-  height: 44px;
+  bottom: calc(@npc-row-height - @npc-full-height);
+  height: @npc-full-height;
   width: 100%;
   background-color: black;
   color: white;
+  transition: bottom 250ms ease;
+}
+
+#nowplaying-controls.expanded {
+  bottom: 0;
 }
 
 #nowplaying-controls > button {
   width: 20%;
-  height: 44px;
-  margin: 0;
+  height: @npc-row-height;
+  margin: 0 0 @npc-row-sep 0;
   padding: 0;
   text-align: center;
   background-color: black;
   color: white;
 }
+
 #nowplaying-controls > button[data-icon]:before {
   position: relative;
   text-align: center;
+  font-size: calc(@npc-row-height*0.8);
   margin: 0;
   padding: 0;
-  height: 44px;
-  line-height: 44px;
+  height: @npc-row-height;
+  line-height: @npc-row-height;
   top: 0;
   right: 0;
+}
+
+#nowplaying-controls > button[disabled] {
+  color: #444444;
+}
+
+#nowplaying-seek {
+  width: 90%;
+  margin: 0 5%;
+  height: @npc-row-height;
+  display: inline-block;
+
+  progress {
+    background-color: #444444;
+  }
+
+  label {
+    color: #444444;
+  }
 }

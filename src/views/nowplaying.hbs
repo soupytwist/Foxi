@@ -5,5 +5,14 @@
 </div>
 
 <div id="nowplaying-controls" role="toolbar">
-<button id="nowplaying-stop" data-icon="stop"></button><button id="nowplaying-seek-back" data-icon="seek-back"></button><button id="nowplaying-playpause" data-icon="play"></button><button id="nowplaying-seek-forward" data-icon="seek-forward"></button><button id="nowplaying-volume" data-icon="sound-min"></button> 
+<button id="nowplaying-more" data-icon="dialpad"></button><button id="nowplaying-seek-back" data-icon="seek-back"></button><button id="nowplaying-playpause" data-icon="play"></button><button id="nowplaying-seek-forward" data-icon="seek-forward"></button><button id="nowplaying-volume" data-icon="sound-max"></button>
+<button id="nowplaying-media-info" data-icon="info" disabled></button><button id="nowplaying-skip-back" data-icon="skip-back"></button><button id="nowplaying-stop" data-icon="stop"></button><button id="nowplaying-skip-forward" data-icon="skip-forward"></button><button id="nowplaying-help" data-icon="help" disabled></button>
+<div id="nowplaying-seek" role="slider" aria-valuemin="0" aria-valuenow="0" aria-valuemax="0" aria-valuetext="slider description">
+  <label id="nowplaying-seek-cur">&ndash;</label>
+  <label id="nowplaying-seek-end">&ndash;</label>
+  <div>
+    <progress value="0" max="0"></progress>
+    <button id="nowplaying-seek-handler">handler</button>
+  </div>
+</div>
 </div>

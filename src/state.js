@@ -2,21 +2,6 @@ var _ = require("lodash");
 var activeCard;
 var subCtr = 0;
 
-function toCard(card) {
-  $("#main").addClass("animating");
-
-  console.log("Showing card: " + card.id);
-  // If there is no active card, just show the new one
-  if (activeCard) {
-    var dir = activeCard.num < card.num ? 'left' : 'right';
-    $(activeCard.id).removeClass("card-active").addClass(dir);
-    activeCard.deactivate();
-  }
-
-  $(card.id).removeClass("left right").addClass("card-active");
-  activeCard = card;
-}
-
 // XXX Experimental
 function Observable(initialValue) {
   this.value = initialValue;
@@ -29,7 +14,6 @@ Observable.prototype.val = function() {
 
 Observable.prototype.update = function(value) {
   this.value = value;
-  console.log("Updated " + value);
   _.each(this.subscriptions, function(sub) {
     sub.notify(value);
   });
@@ -52,7 +36,6 @@ Subscription.prototype.remove = function() {
 };
 
 Subscription.prototype.notify = function(value) {
-  console.log("Notified " + value);
   this.cb(value);
 };
 
@@ -62,12 +45,29 @@ module.exports = {
   episode: null,
   nowplaying: new Observable({}),
   player: {
+    // TODO Support multiple player ids?
+    id: new Observable(1), // XXX: Hardcoded for now...
     volume: new Observable(0),
     muted: new Observable(false),
-    playspeed: 0,
-    position: 0,
-    duration: 0
-  }
+    speed: new Observable(0),
+    position: new Observable(-1),
+    duration: new Observable(-1)
+  },
+  lastCard: null
 };
 
-module.exports.toCard = toCard;
+module.exports.toCard = function(card) {
+  $("#main").addClass("animating");
+
+  console.log("Showing card: " + card.id);
+  // If there is no active card, just show the new one
+  if (activeCard) {
+    this.lastCard = activeCard;
+    var dir = activeCard.num < card.num ? 'left' : 'right';
+    $(activeCard.id).removeClass("card-active").addClass(dir);
+    activeCard.deactivate();
+  }
+
+  $(card.id).removeClass("left right").addClass("card-active");
+  activeCard = card;
+};
