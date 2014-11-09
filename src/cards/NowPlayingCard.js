@@ -31,6 +31,7 @@ NowPlayingCard.prototype.show = function() {
   this.subs.position = state.player.position.subscribe(this.updateSeekbar.bind(this));
   this.subs.duration = state.player.duration.subscribe(this.updateSeekbar.bind(this));
   this.subs.seektime = state.player.speed.subscribe(this.updateSeekTimer.bind(this));
+  this.updateSeekTimer();
 
   //if (!state.nowplaying.val()) {
     var playerid = state.player.id.val();
@@ -49,6 +50,13 @@ NowPlayingCard.prototype.show = function() {
 NowPlayingCard.prototype.deactivate = function() {
   this.subs.nowplaying.remove();
   this.subs.playpause.remove();
+  this.subs.position.remove();
+  this.subs.duration.remove();
+  this.subs.seektime.remove();
+  if (this.seekTimer) {
+    clearInterval(this.seekTimer);
+    delete this.seekTimer;
+  }
 };
 
 function getActivePlayer() {
@@ -134,14 +142,14 @@ NowPlayingCard.prototype.updateSeekbar = function() {
     $("#nowplaying-seek-cur").html("&ndash;");
     $("#nowplaying-seek-end").html("&ndash;");
     $("#nowplaying-seek-handler").css('left', '0%');
-    $("#nowplaying-seek").attr('aria-valuenow', '0');
-    $("#nowplaying-seek").attr('aria-valuemax', '0');
+    $("#nowplaying-seek progress").attr('value', '0');
+    $("#nowplaying-seek progress").attr('max', '0');
   } else {
     $("#nowplaying-seek-cur").html(seektime(position));
     $("#nowplaying-seek-end").html(seektime(duration));
     $("#nowplaying-seek-handler").css('left', (100.0 * position / duration)+'%');
-    $("#nowplaying-seek").attr('aria-valuenow', position);
-    $("#nowplaying-seek").attr('aria-valuemax', duration);
+    $("#nowplaying-seek progress").attr('value', position);
+    $("#nowplaying-seek progress").attr('max', duration);
   }
 };
 
@@ -198,6 +206,39 @@ NowPlayingCard.prototype.load = function() {
     }
   });
 
+  $("#nowplaying-seek-bar").on('touchstart', function() {
+    console.log("Start seeking");
+    card.isSeeking = true;
+  });
+
+  $("#nowplaying-seek-bar").on('touchend', function() {
+    console.log("End seeking");
+    card.isSeeking = false;
+  });
+
+  $("#nowplaying-seek-bar").on('touchmove', function(evt) {
+    if (card.isSeeking) {
+      var playerid = state.player.id.val();
+      if (playerid !== -1) {
+        // target is the seek bar
+        var touch = evt.touches[0];
+        var target = document.getElementById("nowplaying-seek-bar");
+        var x = (touch.clientX - target.offsetLeft) / target.offsetWidth;
+        console.log("Seeking... " + touch.clientX + " - " + target.offsetLeft + " - " + target.offsetWidth);
+        if (x < 0) {
+          x = 0;
+        }
+        if (x > 1) {
+          x = 1;
+        }
+
+        api.Player.Seek({ playerid: playerid, value: (x * 100) });
+        state.player.position.update(parseInt(state.player.duration.val() * x));
+      }
+    }
+  });
+
+  // TODO Move this
   this.subs.muted = state.player.muted.subscribe(function(muted) {
     $("#nowplaying-volume").attr('data-icon', muted ? "mute" : "sound-max");
   });
@@ -205,6 +246,7 @@ NowPlayingCard.prototype.load = function() {
   card.show();
   card.loaded = true;
 };
+
 
 NowPlayingCard.prototype.deactivate = function() {
   if (this.subs.muted) {
