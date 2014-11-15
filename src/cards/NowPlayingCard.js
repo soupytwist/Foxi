@@ -4,6 +4,7 @@ var CARDNUM = require("./cards").CARDNUM;
 var api = require("../rpcapi");
 var util = require("../util");
 var state = require("../state");
+var Observable = require("../observable");
 var _ = require("lodash");
 
 // NOWPLAYING ------------------------------------------------------------------
@@ -32,6 +33,8 @@ NowPlayingCard.prototype.show = function() {
   this.subs.duration = state.player.duration.subscribe(this.updateSeekbar.bind(this));
   this.subs.seektime = state.player.speed.subscribe(this.updateSeekTimer.bind(this));
   this.updateSeekTimer();
+
+  this.seekHandler = new Observable(0);
 
   //if (!state.nowplaying.val()) {
     var playerid = state.player.id.val();
@@ -141,19 +144,23 @@ NowPlayingCard.prototype.updateSeekbar = function() {
   if (position === -1 || duration === -1) {
     $("#nowplaying-seek-cur").html("&ndash;");
     $("#nowplaying-seek-end").html("&ndash;");
-    $("#nowplaying-seek-handler").css('left', '0%');
     $("#nowplaying-seek progress").attr('value', '0');
     $("#nowplaying-seek progress").attr('max', '0');
+    $("#nowplaying-seek-handler").css('left', '0%');
   } else {
     $("#nowplaying-seek-cur").html(seektime(position));
     $("#nowplaying-seek-end").html(seektime(duration));
-    $("#nowplaying-seek-handler").css('left', (100.0 * position / duration)+'%');
     $("#nowplaying-seek progress").attr('value', position);
     $("#nowplaying-seek progress").attr('max', duration);
+
+    if (!this.isSeeking) {
+      $("#nowplaying-seek-handler").css('left', (100.0 * position / duration)+'%');
+    }
   }
 };
 
 
+// TODO Rewrite
 function seektime(secs) {
   var x = secs;
   var res = '';
@@ -189,6 +196,20 @@ NowPlayingCard.prototype.load = function() {
     }
   });
 
+  $("#nowplaying-seek-forward").on('click', function() {
+    var playerid = state.player.id.val();
+    if (playerid !== -1) {
+      api.Player.Seek({ playerid: playerid, value: "smallforward" });
+    }
+  });
+
+  $("#nowplaying-seek-back").on('click', function() {
+    var playerid = state.player.id.val();
+    if (playerid !== -1) {
+      api.Player.Seek({ playerid: playerid, value: "smallbackward" });
+    }
+  });
+
   $("#nowplaying-stop").on('click', function() {
     var playerid = state.player.id.val();
     if (playerid !== -1) {
@@ -209,11 +230,21 @@ NowPlayingCard.prototype.load = function() {
   $("#nowplaying-seek-bar").on('touchstart', function() {
     console.log("Start seeking");
     card.isSeeking = true;
+
+    card.subs.seekHandler = card.seekHandler.subscribe(function(x) {
+      var playerid = state.player.id.val();
+      if (playerid !== -1) {
+        console.log("Seeking to " + (x * 100) + "%");
+        api.Player.Seek({ playerid: playerid, value: (x * 100.0) });
+      }
+    });
   });
 
   $("#nowplaying-seek-bar").on('touchend', function() {
     console.log("End seeking");
     card.isSeeking = false;
+
+    card.subs.seekHandler.remove();
   });
 
   $("#nowplaying-seek-bar").on('touchmove', function(evt) {
@@ -223,8 +254,9 @@ NowPlayingCard.prototype.load = function() {
         // target is the seek bar
         var touch = evt.touches[0];
         var target = document.getElementById("nowplaying-seek-bar");
-        var x = (touch.clientX - target.offsetLeft) / target.offsetWidth;
-        console.log("Seeking... " + touch.clientX + " - " + target.offsetLeft + " - " + target.offsetWidth);
+        var x = (touch.clientX -16 - target.offsetLeft) / target.offsetWidth;
+
+        // Register the seek value
         if (x < 0) {
           x = 0;
         }
@@ -232,8 +264,8 @@ NowPlayingCard.prototype.load = function() {
           x = 1;
         }
 
-        api.Player.Seek({ playerid: playerid, value: (x * 100) });
-        state.player.position.update(parseInt(state.player.duration.val() * x));
+        $("#nowplaying-seek-handler").css('left', (x * 100.0)+'%');
+        card.seekHandler.throttledUpdate(x, 100);
       }
     }
   });
@@ -245,6 +277,12 @@ NowPlayingCard.prototype.load = function() {
 
   card.show();
   card.loaded = true;
+};
+
+
+NowPlayingCard.prototype.handleSeekResponse = function(resp) {
+  var secs = util.timeToSecs(resp.data.player.time);
+  state.player.position.update(secs);
 };
 
 

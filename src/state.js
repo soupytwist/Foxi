@@ -1,43 +1,6 @@
 var _ = require("lodash");
+var Observable = require("./observable");
 var activeCard;
-var subCtr = 0;
-
-// XXX Experimental
-function Observable(initialValue) {
-  this.value = initialValue;
-  this.subscriptions = {};
-}
-
-Observable.prototype.val = function() {
-  return this.value;
-};
-
-Observable.prototype.update = function(value) {
-  this.value = value;
-  _.each(this.subscriptions, function(sub) {
-    sub.notify(value);
-  });
-};
-
-Observable.prototype.subscribe = function(cb) {
-  var sub = new Subscription(this, cb);
-  this.subscriptions[sub.id] = sub;
-  return sub;
-};
-
-function Subscription(obs, cb) {
-  this.cb = cb;
-  this.obs = obs;
-  this.id = "sub_" + (subCtr++);
-}
-
-Subscription.prototype.remove = function() {
-  delete this.obs.subscriptions[this.id];
-};
-
-Subscription.prototype.notify = function(value) {
-  this.cb(value);
-};
 
 module.exports = {
   show: null,

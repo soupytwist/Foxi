@@ -61,6 +61,12 @@ function getImageUrl(img) {
 }
 
 
+// LOGIC HELPERS ---------------------------------------------------------------
+function timeToSecs(t) {
+  return ((t.hours||0) * 3600) + ((t.minutes||0) * 60) + (t.seconds||0);
+}
+
+
 module.exports.hideBackButton = hideBackButton;
 module.exports.hideSettingsButton = hideSettingsButton;
 module.exports.showBackButton = showBackButton;
@@ -68,3 +74,4 @@ module.exports.showSettingsButton = showSettingsButton;
 module.exports.setHeader = setHeader;
 module.exports.setSubheader = setSubheader;
 module.exports.getImageUrl = getImageUrl;
+module.exports.timeToSecs = timeToSecs;

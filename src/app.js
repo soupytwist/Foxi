@@ -30,6 +30,10 @@ window.onload = function() {
     state.player.speed.update(payload.data.player.speed === undefined ? 0 : payload.data.player.speed);
   });
 
+  api.rpc.subscribe("Player.OnSeek", function(payload) {
+    CARDS.NOWPLAYING.handleSeekResponse(payload);
+  });
+
   api.rpc.subscribe("Player.OnStop", function(payload) {
     state.player.id.update(-1);
     state.player.speed.update(0);
