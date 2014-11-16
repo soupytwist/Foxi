@@ -13,7 +13,7 @@ TVShowsCard.prototype = Object.create(Card.prototype);
 
 TVShowsCard.prototype.show = function() {
   state.toCard(this);
-  util.setHeader();
+  util.setHeader("TV Shows");
   util.setSubheader();
   util.hideBackButton();
   util.showSettingsButton(function() {

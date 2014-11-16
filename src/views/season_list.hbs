@@ -1,4 +1,4 @@
-<ul id="season-list" class="season-list">
+<ul id="season-list">
   {{#each seasons}}
   <li class="season-list-item">
     <a data-show-id="{{tvshowid}}" data-season="{{season}}" href="#">
@@ -7,6 +7,9 @@
       </aside>
       <p class="season-label">
         Season {{season}}
+      </p>
+      <p class="season-episode-ct">
+        {{ episode }} episodes
       </p>
     </a>
   </li>

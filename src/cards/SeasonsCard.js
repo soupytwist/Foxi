@@ -24,7 +24,7 @@ SeasonsCard.prototype.load = function() {
   var card = this;
   api.VideoLibrary.GetSeasons({
       tvshowid: state.show.tvshowid,
-      properties: ['tvshowid', 'season', 'art'],
+      properties: ['tvshowid', 'season', 'art', 'episode'],
       sort: {
         order: 'ascending',
         method: 'season'
