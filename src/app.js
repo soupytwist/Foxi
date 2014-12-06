@@ -11,7 +11,7 @@ window.onload = function() {
   // EVENTS --------------------------------------------------------------------
   // TODO Find a better place to register these
   api.rpc.subscribe("Application.OnVolumeChanged", function(payload) {
-    //state.player.volume.update(payload.data.volume);
+    state.player.volume.update(payload.data.volume);
     state.player.muted.update(payload.data.muted);
   });
 

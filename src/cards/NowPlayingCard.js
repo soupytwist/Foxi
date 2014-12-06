@@ -11,6 +11,8 @@ var _ = require("lodash");
 function NowPlayingCard() {
   Card.call(this, CARDNUM.NOWPLAYING, "#card-nowplaying");
   this.subs = {};
+  this.seekHandler = new Observable(0);
+  this.volumeHandler = new Observable(0);
 }
 NowPlayingCard.prototype = Object.create(Card.prototype);
 
@@ -33,8 +35,6 @@ NowPlayingCard.prototype.show = function() {
   this.subs.duration = state.player.duration.subscribe(this.updateSeekbar.bind(this));
   this.subs.seektime = state.player.speed.subscribe(this.updateSeekTimer.bind(this));
   this.updateSeekTimer();
-
-  this.seekHandler = new Observable(0);
 
   //if (!state.nowplaying.val()) {
     var playerid = state.player.id.val();
@@ -268,6 +268,40 @@ NowPlayingCard.prototype.load = function() {
         card.seekHandler.throttledUpdate(x, 100);
       }
     }
+  });
+  
+  $("#nowplaying-volume").on('click', function() {
+    $("#overlay-volume").toggleClass('overlay-visible');
+  });
+
+  $("#overlay-volume").on('click', function() {
+    $("#overlay-volume").removeClass('overlay-visible');
+  });
+
+  this.subs.volumeSlider = this.volumeHandler.subscribe(function(vol) {
+    window.setTimeout(function() { $("#volume-indicator").addClass('fade'); }, 100);
+    api.Application.SetVolume({ volume: vol });
+  });
+
+  function updateVolume(evt) {
+    var ol = $("#volume-bar");
+    var ymin = $(ol).position().top + 60;
+    var ycur = evt.changedTouches[0].clientY;
+    var ymax = $(ol).height() - 120;
+
+    var vol = (((ymax - ycur) * 1.0) / (ymax - ymin)) * 100;
+    vol = Math.max(0, Math.min(100, parseInt(vol)));
+    console.log(ymin + " " + ycur + " " + ymax + " " + vol);
+
+    card.volumeHandler.throttledUpdate(vol, 100);
+    $("#volume-indicator").removeClass('fade').text(String(vol));
+  }
+
+  $("#volume-bar ol").on('touchstart', function() {
+    $(this).on('touchmove', updateVolume);
+    $(this).on('touchend', function() {
+      $("#volume-bar ol").off('touchmove').off('touchend');
+    });
   });
 
   // TODO Move this

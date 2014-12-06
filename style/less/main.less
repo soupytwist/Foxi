@@ -206,16 +206,48 @@ a {
 #header, #subheader, #footer {
   z-index: 50;
 }
-#volume-bar ol li {
-  height: calc(100% / 21);
-}
-#volume-indicator {
-  transition: opacity 0ms;
-  opacity: 1;
-}
-#volume-indicator.fade {
-  transition: opacity 1000ms ease;
-  opacity: 0;
+
+#overlay-volume {
+  z-index: 999;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 1000%;
+
+  &.overlay-visible {
+    left: 0;
+    #volume-bar {
+      right: 0;
+    }
+  }
+
+  #volume-bar {
+    height: 100%;
+    position: fixed;
+    width: 30%;
+    top: 0;
+    right: -30%;
+    background: -moz-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.9));
+    transition: right 500ms ease;
+
+    ol {
+      height: ~"calc(100% - 120px)";
+      margin-top: 60px;
+      float: right;
+      li {
+        height: calc(100% / 21);
+      }
+    }
+  }
+  #volume-indicator {
+    transition: opacity 0ms;
+    opacity: 1;
+  }
+  #volume-indicator.fade {
+    transition: opacity 1000ms ease;
+    opacity: 0;
+  }
 }
 
 #nowplaying-info {
