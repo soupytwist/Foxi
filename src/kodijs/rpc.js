@@ -6,24 +6,40 @@ var subscriptions = {};
 var _ = require("lodash");
 
 function connect(host, port) {
+  return connect_url('ws://'+host+':'+port+'/jsonrpc');
+}
 
+function connect_url(url) {
   /*
    * Return a promise that the connection will be established.
-   * When the connection is successful, event handler are setup>
+   * When the connection is successful, event handler are setup
    */
   return new Promise(function(resolve, reject) {
-    if (!host || !port) {
+    if (!url) {
       reject();
       return;
     }
 
-    var connection = new WebSocket('ws://'+host+':'+port+'/jsonrpc');
+    ws = undefined;
+    var connection = new WebSocket(url);
+
+    // Show the connecting UI
+    $("#dialog-connecting").show();
+    $("#dialog-connecting button").on('click', function() {
+      $(this).off('click');
+      connection.close();
+    });
+
     connection.onerror = function() {
       console.log("Connection refused");
+      $("#dialog-connecting").hide();
+      $("#dialog-connecting button").off('click');
       reject();
     };
     connection.onopen = function() {
       ws = connection;
+      $("#dialog-connecting").hide();
+      $("#dialog-connecting button").off('click');
 
       ws.onmessage = function(evt) {
         var data = JSON.parse(evt.data);
@@ -60,6 +76,7 @@ function send_msg(method, params) {
   if (!ws) {
     throw "No WebSocket connection";
   }
+  
   var idStr = "msg_"+(ctr++); 
   var msg = {
     jsonrpc: "2.0",
@@ -76,7 +93,20 @@ function send_msg(method, params) {
       resolve : resolve,
       reject: reject
     };
-    ws.send(JSON.stringify(msg));
+
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(msg));
+    } else if (ws.url) {
+      connect_url(ws.url).then(function() {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify(msg));
+        } else {
+          throw "WebSocket reconnect failed";
+        }
+      });
+    } else {
+      throw "Connection failed";
+    }
   });
 }
 

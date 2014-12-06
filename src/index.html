@@ -18,6 +18,7 @@
     <link rel="stylesheet" type="text/css" href="building-blocks/style/status.css" >
     <link rel="stylesheet" type="text/css" href="building-blocks/style/seekbars.css" >
     <link rel="stylesheet" type="text/css" href="building-blocks/style/scrolling.css" >
+    <link rel="stylesheet" type="text/css" href="building-blocks/style/progress_activity.css" >
     <link rel="stylesheet" type="text/css" href="building-blocks/style/confirm.css" >
     <link rel="stylesheet" type="text/css" href="building-blocks/style/action_menu.css" >
     <link rel="stylesheet" type="text/css" href="building-blocks/style/tabs.css" >
@@ -75,6 +76,13 @@
           </nav>
         </div>
       </div>
+      <form id="dialog-connecting" role="dialog" data-type="confirm" style="display: none;">
+        <section>
+          <h1>Connecting...</h1>
+          <p><progress></progress></p>
+        </section>
+        <menu><button class="full">Cancel</button></menu>
+      </form>
     </section>
   </body>
 </html>

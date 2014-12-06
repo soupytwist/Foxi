@@ -20,6 +20,9 @@ module.exports = {
 };
 
 module.exports.toCard = function(card) {
+  if (activeCard === card) {
+    console.log("Card: " + card.id + " is already visible, nothing to do.");
+  }
   $("#main").addClass("animating");
 
   console.log("Showing card: " + card.id);
