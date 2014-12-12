@@ -55,6 +55,9 @@ window.onload = function() {
   $("#nowplaying-button").click(function() {
     CARDS.NOWPLAYING.activate();
   });
+  $("#classic-remote-button").click(function() {
+    CARDS.CLASSIC_REMOTE.activate();
+  });
 };
 
 /*

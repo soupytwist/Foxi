@@ -28,7 +28,6 @@ module.exports.toCard = function(card) {
   console.log("Showing card: " + card.id);
   // If there is no active card, just show the new one
   if (activeCard) {
-    this.lastCard = activeCard;
     var dir = activeCard.num < card.num ? 'left' : 'right';
     $(activeCard.id).removeClass("card-active").addClass(dir);
     activeCard.deactivate();
@@ -36,4 +35,11 @@ module.exports.toCard = function(card) {
 
   $(card.id).removeClass("left right").addClass("card-active");
   activeCard = card;
+
+  // TODO This is very sloppy. Don't really do this.
+  // I can't include CARDNUM here, suspect circular dependency doesn't work
+  // Don't go back and forth between classic remote and now playing
+  if (activeCard.num !== 4 && activeCard.num !== 5) {
+    this.lastCard = activeCard;
+  }
 };

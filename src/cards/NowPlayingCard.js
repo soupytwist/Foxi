@@ -50,6 +50,16 @@ NowPlayingCard.prototype.show = function() {
   //}
 };
 
+
+NowPlayingCard.prototype.activate = function() {
+  Card.prototype.activate.call(this);
+
+  // Show the button to switch to classic remote
+  $("#classic-remote-button").show();
+  $("#nowplaying-button").hide();
+};
+
+
 NowPlayingCard.prototype.deactivate = function() {
   this.subs.nowplaying.remove();
   this.subs.playpause.remove();
@@ -60,6 +70,13 @@ NowPlayingCard.prototype.deactivate = function() {
     clearInterval(this.seekTimer);
     delete this.seekTimer;
   }
+  if (this.subs.muted) {
+    this.subs.muted.remove();
+  }
+
+  // Show the button to switch to now playing
+  $("#nowplaying-button").show();
+  $("#classic-remote-button").hide();
 };
 
 function getActivePlayer() {
@@ -319,12 +336,6 @@ NowPlayingCard.prototype.handleSeekResponse = function(resp) {
   state.player.position.update(secs);
 };
 
-
-NowPlayingCard.prototype.deactivate = function() {
-  if (this.subs.muted) {
-    this.subs.muted.remove();
-  }
-};
 
 NowPlayingCard.prototype.update = function() {
   $("#nowplaying-episode-title").text(state.nowplaying.title);

@@ -332,3 +332,32 @@ a {
     text-align: center;
   }
 }
+
+#classic-remote {
+  div.row {
+
+    &:first-of-type {
+      margin-top: 64px;
+    }
+
+    display: block;
+    width: 100%;
+
+    button {
+      font-style: normal;
+      font-size: 32px;
+      height: 64px;
+      padding-top: 0.5em;
+      padding-bottom: 0.5em;
+      color: white;
+      background-color: #333333;
+    }
+
+    &.three-buttons {
+      button {
+        width: 30%;
+        margin: 1.66%;
+      }
+    }
+  }
+}
