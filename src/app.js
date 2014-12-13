@@ -1,6 +1,6 @@
 var api = require("./rpcapi");
 var state = require("./state");
-var CARDS = require("./cards/cards").CARDS;
+var CARDS = require("./cards/cards");
 
 window.onload = function() {
 
@@ -20,8 +20,19 @@ window.onload = function() {
     state.player.speed.update(payload.data.player.speed === undefined ? 1 : payload.data.player.speed);
 
     var np = state.nowplaying.val();
-    if (np.episodeid !== payload.data.item.id) {
-      CARDS.NOWPLAYING.setNowPlayingEpisode(payload.data.item.id);
+
+    switch(payload.data.item.type) {
+      case 'episode':
+        if (np.episodeid !== payload.data.item.id) {
+          CARDS.NOWPLAYING.setNowPlayingEpisode(payload.data.item.id);
+        }
+        break;
+
+      case 'movie':
+        if (np.movieid !== payload.data.item.id) {
+          CARDS.NOWPLAYING.setNowPlayingMovie(payload.data.item.id);
+        }
+        break;
     }
   });
 
@@ -40,6 +51,7 @@ window.onload = function() {
     state.player.position.update(-1);
     state.player.duration.update(-1);
     state.nowplaying.update({});
+    CARDS.NOWPLAYING.updateEpisode();
   });
 
   // INIT ----------------------------------------------------------------------

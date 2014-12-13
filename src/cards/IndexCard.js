@@ -1,0 +1,54 @@
+var Card = require("./Card");
+var CARDS = require("./cards");
+var CARDNUM = require("./cardnum");
+var api = require("../rpcapi");
+var util = require("../util");
+var state = require("../state");
+
+// INDEX -----------------------------------------------------------------------
+function IndexCard() {
+  Card.call(this, CARDNUM.INDEX, "#card-index");
+}
+IndexCard.prototype = Object.create(Card.prototype);
+
+IndexCard.prototype.show = function() {
+  state.toCard(this);
+  util.setHeader("Foxi");
+  util.setSubheader();
+  util.hideBackButton();
+  util.showSettingsButton(function() {
+    CARDS.SETTINGS.activate();
+  });
+};
+
+IndexCard.prototype.load = function() {
+  var card = this;
+  card.render('index');
+
+  $("a[data-card-link]").on('click', function() {
+    var linked = CARDS[$(this).attr('data-card-link')];
+    linked.activate();
+  });
+
+  api.VideoLibrary.GetRecentlyAddedMovies({
+    properties: [ 'art' ],
+    limits: {
+      end: 4
+    }
+  }).then(function(data) {
+      card.render('index_recent_movies', data.result, '#index-recent-movies');
+  });
+
+  api.VideoLibrary.GetRecentlyAddedEpisodes({
+    properties: [ 'art' ],
+    limits: {
+      end: 4
+    }
+  }).then(function(data) {
+      card.render('index_recent_episodes', data.result, '#index-recent-episodes');
+  });
+
+  this.show();
+};
+
+module.exports = new IndexCard();

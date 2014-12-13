@@ -1,6 +1,6 @@
 var Card = require("./Card");
-var CARDS = require("./cards").CARDS;
-var CARDNUM = require("./cards").CARDNUM;
+var CARDS = require("./cards");
+var CARDNUM = require("./cardnum");
 var api = require("../rpcapi");
 var util = require("../util");
 var state = require("../state");
@@ -15,10 +15,10 @@ TVShowsCard.prototype.show = function() {
   state.toCard(this);
   util.setHeader("TV Shows");
   util.setSubheader();
-  util.hideBackButton();
-  util.showSettingsButton(function() {
-    CARDS.SETTINGS.activate();
+  util.showBackButton(function() {
+    CARDS.INDEX.activate();
   });
+  util.hideSettingsButton();
 };
 
 TVShowsCard.prototype.load = function() {

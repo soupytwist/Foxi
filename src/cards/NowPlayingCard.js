@@ -1,6 +1,6 @@
 var Card = require("./Card");
-var CARDS = require("./cards").CARDS;
-var CARDNUM = require("./cards").CARDNUM;
+var CARDS = require("./cards");
+var CARDNUM = require("./cardnum");
 var api = require("../rpcapi");
 var util = require("../util");
 var state = require("../state");
@@ -29,13 +29,14 @@ NowPlayingCard.prototype.show = function() {
       CARDS.TVSHOWS.activate();
     }
   });
-  this.subs.nowplaying = state.nowplaying.subscribe(this.updateEpisode.bind(this));
+  //this.subs.nowplaying = state.nowplaying.subscribe(this.updateNowPlaying.bind(this));
   this.subs.playpause = state.player.speed.subscribe(this.updatePlayPauseButton.bind(this));
   this.subs.position = state.player.position.subscribe(this.updateSeekbar.bind(this));
   this.subs.duration = state.player.duration.subscribe(this.updateSeekbar.bind(this));
   this.subs.seektime = state.player.speed.subscribe(this.updateSeekTimer.bind(this));
   this.updateSeekTimer();
 
+  /* XXX This should be handled by Player.OnPlay notification
   //if (!state.nowplaying.val()) {
     var playerid = state.player.id.val();
     if (playerid !== -1) {
@@ -48,6 +49,7 @@ NowPlayingCard.prototype.show = function() {
       });
     }
   //}
+  */
 };
 
 
@@ -61,7 +63,7 @@ NowPlayingCard.prototype.activate = function() {
 
 
 NowPlayingCard.prototype.deactivate = function() {
-  this.subs.nowplaying.remove();
+  //this.subs.nowplaying.remove();
   this.subs.playpause.remove();
   this.subs.position.remove();
   this.subs.duration.remove();
@@ -91,15 +93,16 @@ function getActivePlayer() {
 
 
 NowPlayingCard.prototype.setNowPlayingEpisode = function(id) {
-  // TODO Support other possible item types aside from episode
+  var card = this;
   api.VideoLibrary.GetEpisodeDetails({
     episodeid: id, properties: ['title', 'showtitle', 'plot', 'thumbnail', 'season', 'runtime', 'resume']
   }).then(function(data) {
     state.nowplaying.update(data.result.episodedetails);
     state.player.position.update(data.result.episodedetails.resume.position || 0);
     state.player.duration.update(data.result.episodedetails.runtime);
+    card.updateEpisode();
   });
-}
+};
 
 
 NowPlayingCard.prototype.updateEpisode = function() {
@@ -129,6 +132,44 @@ NowPlayingCard.prototype.updateEpisode = function() {
   } else {
     util.setSubheader("Now Playing");
   }
+};
+
+
+// TODO Combine with above
+NowPlayingCard.prototype.setNowPlayingMovie = function(id) {
+  var card = this;
+  api.VideoLibrary.GetMovieDetails({
+    movieid: id, properties: ['title', 'plot', 'thumbnail', 'runtime', 'resume']
+  }).then(function(data) {
+    state.nowplaying.update(data.result.moviedetails);
+    state.player.position.update(data.result.moviedetails.resume.position || 0);
+    state.player.duration.update(data.result.moviedetails.runtime);
+    card.updateMovie();
+  });
+};
+
+
+// TODO Combine with above
+NowPlayingCard.prototype.updateMovie = function() {
+  var movie = state.nowplaying.val();
+  if (movie && movie.thumbnail) {
+    $("#nowplaying-thumb").attr('src', util.getImageUrl(movie.thumbnail));
+  } else {
+    $("#nowplaying-thumb").attr('src', "");
+  }
+  if (movie && movie.title) {
+    $("#nowplaying-episode-title").text(movie.title);
+    util.setHeader(movie.title);
+  } else {
+    $("#nowplaying-episode-title").text("Title...");
+    util.setHeader("Foxi");
+  }
+  if (movie && movie.plot) {
+    $("#nowplaying-episode-plot").text(movie.plot);
+  } else {
+    $("#nowplaying-episode-plot").text("Plot...");
+  }
+  util.setSubHeader("Now Playing");
 };
 
 

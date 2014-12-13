@@ -1,6 +1,7 @@
 var _ = require("lodash");
 var Observable = require("./observable");
 var activeCard;
+var CARDNUM = require("./cards/cardnum");
 
 module.exports = {
   show: null,
@@ -39,7 +40,7 @@ module.exports.toCard = function(card) {
   // TODO This is very sloppy. Don't really do this.
   // I can't include CARDNUM here, suspect circular dependency doesn't work
   // Don't go back and forth between classic remote and now playing
-  if (activeCard.num !== 4 && activeCard.num !== 5) {
+  if (activeCard.num !== CARDNUM.NOWPLAYING && activeCard.num !== CARDNUM.CLASSIC_REMOTE) {
     this.lastCard = activeCard;
   }
 };

@@ -98,14 +98,14 @@ a {
   }
 }
 
-#card-seasons {
-  #season-list {
+#card-seasons, #card-movies {
+  ul.large-side-banners {
     margin: 0;
     padding: 0;
     list-style-type: none;
     width: 100%;
 
-    .season-list-item {
+    li {
       margin: 0;
       padding: 0;
       list-style-type: none;
@@ -199,6 +199,36 @@ a {
           color: @clr-subtext;
         }
       }
+    }
+  }
+}
+
+#card-index {
+  #index-list {
+    li {
+      font-size: 3rem;
+      line-height: 6rem;
+
+      a {
+        display: block;
+
+        &:after {
+          content: "";
+          clear: both;
+          display:table;
+        }
+      }
+    }
+  }
+
+  .recent {
+    height: 12rem;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+
+    img {
+      height: 100%;
     }
   }
 }

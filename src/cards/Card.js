@@ -18,9 +18,9 @@ Card.prototype.activate = function(forceReload) {
 };
 Card.prototype.deactivate = function() {};
 
-Card.prototype.render = function(tplName, data) {
+Card.prototype.render = function(tplName, data, elem) {
   console.log("Rendering: " + tplName);
-  $(this.id).html(templates[tplName](data));
+  $(elem || this.id).html(templates[tplName](data));
 };
 Card.prototype.show = function() {};
 Card.prototype.load = function() {};

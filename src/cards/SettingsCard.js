@@ -1,6 +1,6 @@
 var Card = require("./Card");
-var CARDS = require("./cards.js").CARDS;
-var CARDNUM = require("./cards.js").CARDNUM;
+var CARDS = require("./cards");
+var CARDNUM = require("./cardnum");
 var api = require("../rpcapi");
 var util = require("../util");
 var state = require("../state");
@@ -39,7 +39,7 @@ SettingsCard.prototype.tryConnect = function() {
   api.rpc.connect(localStorage.cfg_host, localStorage.cfg_port).then(
       // Success
       function() {
-        CARDS.TVSHOWS.activate();
+        CARDS.INDEX.activate();
       },
       // Error
       function() {

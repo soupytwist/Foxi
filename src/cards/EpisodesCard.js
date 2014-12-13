@@ -1,6 +1,6 @@
 var Card = require("./Card");
-var CARDS = require("./cards").CARDS;
-var CARDNUM = require("./cards").CARDNUM;
+var CARDS = require("./cards");
+var CARDNUM = require("./cardnum");
 var api = require("../rpcapi");
 var util = require("../util");
 var state = require("../state");
@@ -33,7 +33,7 @@ EpisodesCard.prototype.load = function() {
   }).then(function(data) {
 
     card.render('episode_list', data.result);
-    $("#episode-list .episode-list-item a").click(function() {
+    $("#episode-list a").click(function() {
       var itemid = parseInt($(this).attr('data-libraryid'));
       api.Player.Open({ item: { episodeid: itemid } }).then(function() {
         CARDS.NOWPLAYING.activate(true);

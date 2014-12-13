@@ -1,6 +1,6 @@
 var Card = require("./Card");
-var CARDS = require("./cards").CARDS;
-var CARDNUM = require("./cards").CARDNUM;
+var CARDS = require("./cards");
+var CARDNUM = require("./cardnum");
 var api = require("../rpcapi");
 var util = require("../util");
 var state = require("../state");
@@ -32,7 +32,7 @@ SeasonsCard.prototype.load = function() {
   }).then(function(data) {
 
     card.render('season_list', data.result);
-    $("#season-list .season-list-item a").click(function() {
+    $("#season-list a").click(function() {
       state.season = parseInt($(this).attr('data-season'));
       // We have to reload when a new season is selected
       CARDS.EPISODES.activate(true);
