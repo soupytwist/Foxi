@@ -4,6 +4,7 @@ var CARDNUM = require("./cardnum");
 var api = require("../rpcapi");
 var util = require("../util");
 var state = require("../state");
+var imgUtil = require("../img");
 
 // EPISODES --------------------------------------------------------------------
 function EpisodesCard() {
@@ -40,8 +41,11 @@ EpisodesCard.prototype.load = function() {
       });
     });
 
-    card.show();
-    card.loaded = true;
+    var imagesToLoad = $(".episode-banner > img[data-cache-url]");
+    imgUtil.loadImages(imagesToLoad, imgUtil.dimensions.tv_thumb, 2500).then(function() {
+      card.show();
+      card.loaded = true;
+    });
   });
 };
 

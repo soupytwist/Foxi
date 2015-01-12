@@ -5,6 +5,14 @@ var api = require("../rpcapi");
 var util = require("../util");
 var state = require("../state");
 
+var EFFECTS = {
+  none: "No animations",
+  fade: "Fade",
+  blur: "Blur",
+  slide: "Slide",
+  swoop: "3D Swoop",
+};
+
 // SETTINGS --------------------------------------------------------------------
 function SettingsCard() {
   Card.call(this, CARDNUM.SETTINGS, "#card-settings");
@@ -14,14 +22,23 @@ SettingsCard.prototype = Object.create(Card.prototype);
 SettingsCard.prototype.show = function() {
   state.toCard(this);
   util.setHeader("Settings");
-  util.showBackButton(function() {
-    CARDS.TVSHOWS.activate();
-  });
+  util.hideBackButton();
+  util.hideSettingsButton();
 };
 
 SettingsCard.prototype.load = function() {
   var card = this;
-  card.render('settings', { host: localStorage.cfg_host, port: localStorage.cfg_port });
+  card.render('settings', {
+    host: localStorage.cfg_host,
+    port: localStorage.cfg_port,
+    effect: localStorage.cfg_effect || "swoop",
+    effect_choices: EFFECTS
+  });
+
+  $("#cfg-effect").on("change", function() {
+    localStorage.cfg_effect = $(this).val();
+    card.prepare();
+  });
 
   $("#cfg-connect-btn").on('click', function() {
     var host = $("#cfg-host-field").val();
@@ -47,6 +64,11 @@ SettingsCard.prototype.tryConnect = function() {
         CARDS.SETTINGS.activate();
       }
   );
+};
+
+SettingsCard.prototype.prepare = function() {
+  var effect = localStorage.cfg_effect || "swoop";
+  $("#main").attr("class", "animate-"+effect);
 };
 
 module.exports = new SettingsCard();

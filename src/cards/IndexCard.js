@@ -4,6 +4,7 @@ var CARDNUM = require("./cardnum");
 var api = require("../rpcapi");
 var util = require("../util");
 var state = require("../state");
+var imgUtil = require("../img");
 
 // INDEX -----------------------------------------------------------------------
 function IndexCard() {
@@ -37,6 +38,7 @@ IndexCard.prototype.load = function() {
     }
   }).then(function(data) {
       card.render('index_recent_movies', data.result, '#index-recent-movies');
+      imgUtil.loadImages($("#index-recent-movies img[data-cache-url]"), imgUtil.dimensions.movie);
   });
 
   api.VideoLibrary.GetRecentlyAddedEpisodes({
@@ -46,8 +48,10 @@ IndexCard.prototype.load = function() {
     }
   }).then(function(data) {
       card.render('index_recent_episodes', data.result, '#index-recent-episodes');
+      imgUtil.loadImages($("#index-recent-episodes img[data-cache-url]"), imgUtil.dimensions.tv_thumb);
   });
 
+  this.loaded = true;
   this.show();
 };
 

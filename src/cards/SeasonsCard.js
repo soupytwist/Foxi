@@ -4,6 +4,7 @@ var CARDNUM = require("./cardnum");
 var api = require("../rpcapi");
 var util = require("../util");
 var state = require("../state");
+var imgUtil = require("../img");
 
 // SEASONS ---------------------------------------------------------------------
 function SeasonsCard() {
@@ -37,8 +38,12 @@ SeasonsCard.prototype.load = function() {
       // We have to reload when a new season is selected
       CARDS.EPISODES.activate(true);
     });
-    card.show();
-    card.loaded = true;
+
+    var imagesToLoad = $(".season-banner > img[data-cache-url]");
+    imgUtil.loadImages(imagesToLoad, imgUtil.dimensions.tv_season, 2500).then(function() {
+      card.show();
+      card.loaded = true;
+    });
   });
 };
 

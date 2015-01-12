@@ -4,6 +4,7 @@ var CARDNUM = require("./cardnum");
 var api = require("../rpcapi");
 var util = require("../util");
 var state = require("../state");
+var imgUtil = require("../img");
 
 // TV SHOWS --------------------------------------------------------------------
 function MoviesCard() {
@@ -40,8 +41,11 @@ MoviesCard.prototype.load = function() {
       });
     });
 
-    card.show();
-    card.loaded = true;
+    var imagesToLoad = $("#movie-list .season-banner > img[data-cache-url]");
+    imgUtil.loadImages(imagesToLoad, imgUtil.dimensions.movie, 2500).then(function() {
+      card.show();
+      card.loaded = true;
+    });
   });
 };
 

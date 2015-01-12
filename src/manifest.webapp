@@ -8,6 +8,8 @@
   },
   "type": "privileged",
   "permissions": {
+    "systemXHR": true,
+    "storage": true
   },
   "icons": {
     "128": "/icons/foxi_128.png",

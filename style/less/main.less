@@ -18,6 +18,12 @@ a {
   outline: 0;
 }
 
+#cfg-form {
+  input {
+    -moz-box-sizing: border-box;
+  }
+}
+
 #app {
   #subheader {
     transition: height 400ms ease;
@@ -28,24 +34,52 @@ a {
   }
 }
 
-.banner-list {
+ul.banner-list {
   margin: 0;
   padding: 0;
   list-style-type: none;
   width: 100%;
-}
-.banner-list-item {
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
-  position: relative;
-}
-.banner-list-item a {
-  margin: 0;
-  padding: 0;
-}
-.banner-list-item img {
-  width: 100%;
+  
+  li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    position: relative;
+
+    a.tv-banner {
+      position: relative;
+      display: block;
+      margin: 0;
+      padding: 0;
+
+      > span {
+        top: 0;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: block;
+        margin: 0;
+        padding: 12px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        z-index: 100;
+      }
+
+      &.cache-loaded > span {
+        display: none;
+      }
+
+      > img {
+        width: 100%;
+        z-index: 99;
+        margin: 0;
+        padding: 0;
+      }
+    }
+  }
 }
 
 #main.animating {
@@ -62,14 +96,9 @@ a {
 }
 
 .card {
-  transition: transform 500ms ease 100ms, opacity 500ms ease 100ms;
-  transform: perspective(360px) rotateY(0deg);
-  transform-origin: -15% 50% 0px;
-  backface-visibility: hidden;
   position: absolute;
   height: ~"calc(100% - 5rem)";
   z-index: 20;
-  opacity: 1;
   width: 100%;
 
   &.subheader-card {
@@ -84,6 +113,14 @@ a {
       width: ~"calc(100% - 8px)";
     }
   }
+}
+
+.animate-swoop .card {
+  transition: transform 500ms ease 100ms, opacity 500ms ease 100ms;
+  transform: perspective(360px) rotateY(0deg);
+  transform-origin: -15% 50% 0px;
+  backface-visibility: hidden;
+  opacity: 1;
 
   &.left {
     transform: perspective(360px) rotateY(-90deg);
@@ -95,6 +132,65 @@ a {
     transform: perspective(360px) rotateY(90deg);
     opacity: 0.1;
     z-index: 10;
+  }
+}
+
+.animate-slide .card {
+  transition: opacity 500ms ease 100ms, left 500ms ease 100ms;
+  left: 0;
+  opacity: 1;
+
+  &.left {
+    left: -100%;
+    z-index: 30;
+    opacity: 1;
+  }
+
+  &.right {
+    left: 100%;
+    opacity: 0;
+    z-index: 10;
+  }
+}
+
+.animate-fade .card {
+  transition: opacity 500ms ease 100ms;
+  opacity: 1;
+  z-index: 30;
+
+  &.left, &.right {
+    z-index: 10;
+    opacity: 0;
+  }
+}
+
+.animate-none .card {
+  &.left, &.right {
+    display: none;
+  }
+}
+
+.animate-blur .card {
+  transition: opacity 500ms ease 100ms, left 500ms cubic-bezier(1,0,0,1) 100ms;
+  opacity: 1;
+  z-index: 30;
+  left: 0;
+
+  &.left {
+    z-index: 10;
+    opacity: 0;
+    left: -100%;
+  }
+  &.right {
+    z-index: 10;
+    opacity: 0;
+    left: 100%;
+  }
+}
+
+.animate-none .card {
+  &.left, &.right {
+    display: none;
   }
 }
 
@@ -184,6 +280,9 @@ a {
 
       p {
         display: block;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
 
         &:first-of-type {
           padding-top: 1rem;

@@ -10,4 +10,9 @@
   <p>
     <a id="cfg-connect-btn" class="bb-button recommend" href="#">Connect</a> 
   </p>
+  <p>
+    <select id="cfg-effect">
+    {{#each effect_choices}}<option value="{{@key}}">{{this}}</option>{{/each}}
+    </select>
+  </p>
 </form>

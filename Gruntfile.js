@@ -27,6 +27,7 @@ module.exports = function(grunt) {
         files: [
           { expand: true, cwd: 'build', src: [
             'index.html',
+            'img.js',
             'manifest.webapp',
           ], dest: 'dist/' },
           { expand: true, cwd:'bower_components', src: [
@@ -35,7 +36,8 @@ module.exports = function(grunt) {
             'gaia-icons/**'
           ], dest: 'dist/' },
           { expand: true, src: [
-            'icons/*.png'
+            'icons/*.png',
+            'assets/**'
           ], dest: 'dist/' }
         ]
       }

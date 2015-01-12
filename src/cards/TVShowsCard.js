@@ -4,6 +4,7 @@ var CARDNUM = require("./cardnum");
 var api = require("../rpcapi");
 var util = require("../util");
 var state = require("../state");
+var imgUtil = require("../img");
 
 // TV SHOWS --------------------------------------------------------------------
 function TVShowsCard() {
@@ -32,7 +33,7 @@ TVShowsCard.prototype.load = function() {
   }).then(function(data) {
 
     card.render('tv_show_list', data.result);
-    $("#tv-show-list .banner-list-item a").click(function() {
+    $("a.tv-banner").click(function() {
       var showId = parseInt($(this).attr('data-show-id'));
       var showName = $(this).attr('data-show-name');
       state.show = {
@@ -42,8 +43,12 @@ TVShowsCard.prototype.load = function() {
       // We have to reload when a new show is selected
       CARDS.SEASONS.activate(true);
     });
-    card.show();
-    card.loaded = true;
+    
+    var imagesToLoad = $("a.tv-banner > img[data-cache-url]");
+    imgUtil.loadImages(imagesToLoad, imgUtil.dimensions.tv_banner, 2500).then(function() {
+      card.show();
+      card.loaded = true;
+    });
   });
 };
 

@@ -1,9 +1,9 @@
 var api = require("./rpcapi");
 var state = require("./state");
 var CARDS = require("./cards/cards");
+var DB = require("./db");
 
 window.onload = function() {
-
   $(".card").on("transitionend", function() {
     $("#main").removeClass("animating");
   });
@@ -55,14 +55,18 @@ window.onload = function() {
   });
 
   // INIT ----------------------------------------------------------------------
-  if (localStorage.cfg_host && localStorage.cfg_port) {
-    // If we have a saved connection, reconnect
-    CARDS.SETTINGS.tryConnect();
+  DB.init(function() {
+    CARDS.SETTINGS.prepare();
 
-  } else {
-    // Prompt the user to enter the host information
-    CARDS.SETTINGS.activate();
-  }
+    if (localStorage.cfg_host && localStorage.cfg_port) {
+      // If we have a saved connection, reconnect
+      CARDS.SETTINGS.tryConnect();
+
+    } else {
+      // Prompt the user to enter the host information
+      CARDS.SETTINGS.activate();
+    }
+  });
 
   $("#nowplaying-button").click(function() {
     CARDS.NOWPLAYING.activate();
