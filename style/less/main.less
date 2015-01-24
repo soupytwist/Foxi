@@ -490,3 +490,25 @@ ul.banner-list {
     }
   }
 }
+
+.selectable {
+  box-shadow: none;
+  transition: box-shadow 500ms ease, transform 500ms ease;
+}
+
+.selectable.freeze-selected {
+  box-shadow:
+    0 0 5px 3px #000000,
+    0 0 8px 5px #ffffff;
+  transform: scale(0.9);
+  z-index: 9998;
+}
+
+#freeze-fg {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+}

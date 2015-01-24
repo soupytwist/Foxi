@@ -16,6 +16,7 @@ ClassicRemoteCard.prototype = Object.create(Card.prototype);
 ClassicRemoteCard.prototype.show = function() {
   var that = this;
 
+  Card.prototype.show.call(this);
   state.toCard(this);
   util.setHeader("Foxi");
   util.setSubheader("");

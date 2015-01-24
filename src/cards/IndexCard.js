@@ -13,6 +13,7 @@ function IndexCard() {
 IndexCard.prototype = Object.create(Card.prototype);
 
 IndexCard.prototype.show = function() {
+  Card.prototype.show.call(this);
   state.toCard(this);
   util.setHeader("Foxi");
   util.setSubheader();
@@ -27,6 +28,7 @@ IndexCard.prototype.load = function() {
   card.render('index');
 
   $("a[data-card-link]").on('click', function() {
+    util.freezeUI(this);
     var linked = CARDS[$(this).attr('data-card-link')];
     linked.activate();
   });

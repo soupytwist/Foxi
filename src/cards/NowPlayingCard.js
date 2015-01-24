@@ -19,6 +19,7 @@ NowPlayingCard.prototype = Object.create(Card.prototype);
 NowPlayingCard.prototype.show = function() {
   var that = this;
 
+  Card.prototype.show.call(this);
   state.toCard(this);
   util.setHeader((state.show && state.show.label) ? state.show.label : "Now Playing");
   util.setSubheader(state.season ? ("Season " + state.season)  : "Now Playing");

@@ -35,7 +35,7 @@ module.exports = function(Handlebars) {
     var img = Handlebars.escapeExpression(this.art.banner);
     var src = util.getImageUrl(img);
     
-    return new Handlebars.SafeString('<a class="tv-banner" data-show-name="'+title+'" data-show-id="'+tvshowid+'"><img data-cache-url="'+src+'" src="/assets/banner.png"><span>'+title+'</span></a>');
+    return new Handlebars.SafeString('<a class="tv-banner selectable" data-show-name="'+title+'" data-show-id="'+tvshowid+'"><img data-cache-url="'+src+'" src="/assets/banner.png"><span>'+title+'</span></a>');
   });
 
   Handlebars.registerHelper('img_season_art', function() {

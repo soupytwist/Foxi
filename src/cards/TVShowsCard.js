@@ -13,6 +13,7 @@ function TVShowsCard() {
 TVShowsCard.prototype = Object.create(Card.prototype);
 
 TVShowsCard.prototype.show = function() {
+  Card.prototype.show.call(this);
   state.toCard(this);
   util.setHeader("TV Shows");
   util.setSubheader();
@@ -34,6 +35,7 @@ TVShowsCard.prototype.load = function() {
 
     card.render('tv_show_list', data.result);
     $("a.tv-banner").click(function() {
+      util.freezeUI(this);
       var showId = parseInt($(this).attr('data-show-id'));
       var showName = $(this).attr('data-show-name');
       state.show = {

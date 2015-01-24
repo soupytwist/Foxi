@@ -67,6 +67,17 @@ function timeToSecs(t) {
 }
 
 
+function freezeUI(selected) {
+  $("#freeze-fg").show();
+  $(selected).addClass("freeze-selected");
+}
+
+function unfreezeUI() {
+  $(".freeze-selected").removeClass("freeze-selected");
+  $("#freeze-fg").hide();
+}
+
+
 module.exports.hideBackButton = hideBackButton;
 module.exports.hideSettingsButton = hideSettingsButton;
 module.exports.showBackButton = showBackButton;
@@ -75,3 +86,5 @@ module.exports.setHeader = setHeader;
 module.exports.setSubheader = setSubheader;
 module.exports.getImageUrl = getImageUrl;
 module.exports.timeToSecs = timeToSecs;
+module.exports.freezeUI = freezeUI;
+module.exports.unfreezeUI = unfreezeUI;

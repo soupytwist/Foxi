@@ -13,6 +13,7 @@ function SeasonsCard() {
 SeasonsCard.prototype = Object.create(Card.prototype);
 
 SeasonsCard.prototype.show = function() {
+  Card.prototype.show.call(this);
   state.toCard(this);
   util.setHeader(state.show.title);
   util.setSubheader();
@@ -34,6 +35,7 @@ SeasonsCard.prototype.load = function() {
 
     card.render('season_list', data.result);
     $("#season-list a").click(function() {
+      util.freezeUI(this);
       state.season = parseInt($(this).attr('data-season'));
       // We have to reload when a new season is selected
       CARDS.EPISODES.activate(true);

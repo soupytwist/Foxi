@@ -13,6 +13,7 @@ function MoviesCard() {
 MoviesCard.prototype = Object.create(Card.prototype);
 
 MoviesCard.prototype.show = function() {
+  Card.prototype.show.call(this);
   state.toCard(this);
   util.setHeader("Movies");
   util.setSubheader();
@@ -35,6 +36,7 @@ MoviesCard.prototype.load = function() {
     card.render('movie_list', data.result);
 
     $("#movie-list a").click(function() {
+      util.freezeUI(this);
       var itemid = parseInt($(this).attr('data-libraryid'));
       api.Player.Open({ item: { movieid: itemid } }).then(function() {
         CARDS.NOWPLAYING.activate(true);

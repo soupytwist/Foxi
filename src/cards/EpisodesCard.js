@@ -13,6 +13,7 @@ function EpisodesCard() {
 EpisodesCard.prototype = Object.create(Card.prototype);
 
 EpisodesCard.prototype.show = function() {
+  Card.prototype.show.call(this);
   state.toCard(this);
   util.setHeader(state.show.title);
   util.setSubheader("Season " + state.season);
@@ -35,6 +36,7 @@ EpisodesCard.prototype.load = function() {
 
     card.render('episode_list', data.result);
     $("#episode-list a").click(function() {
+      util.freezeUI(this);
       var itemid = parseInt($(this).attr('data-libraryid'));
       api.Player.Open({ item: { episodeid: itemid } }).then(function() {
         CARDS.NOWPLAYING.activate(true);
