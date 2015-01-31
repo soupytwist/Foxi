@@ -30,27 +30,12 @@ NowPlayingCard.prototype.show = function() {
       CARDS.TVSHOWS.activate();
     }
   });
-  //this.subs.nowplaying = state.nowplaying.subscribe(this.updateNowPlaying.bind(this));
+
   this.subs.playpause = state.player.speed.subscribe(this.updatePlayPauseButton.bind(this));
   this.subs.position = state.player.position.subscribe(this.updateSeekbar.bind(this));
   this.subs.duration = state.player.duration.subscribe(this.updateSeekbar.bind(this));
   this.subs.seektime = state.player.speed.subscribe(this.updateSeekTimer.bind(this));
   this.updateSeekTimer();
-
-  /* XXX This should be handled by Player.OnPlay notification
-  //if (!state.nowplaying.val()) {
-    var playerid = state.player.id.val();
-    if (playerid !== -1) {
-      api.Player.GetItem({ playerid: playerid }).then(function(data) {
-        if (data.result && data.result.item.id) {
-          that.setNowPlayingEpisode(data.result.item.id);
-        } else {
-          state.nowplaying.update({});
-        }
-      });
-    }
-  //}
-  */
 };
 
 
@@ -64,7 +49,6 @@ NowPlayingCard.prototype.activate = function() {
 
 
 NowPlayingCard.prototype.deactivate = function() {
-  //this.subs.nowplaying.remove();
   this.subs.playpause.remove();
   this.subs.position.remove();
   this.subs.duration.remove();
@@ -82,17 +66,67 @@ NowPlayingCard.prototype.deactivate = function() {
   $("#classic-remote-button").hide();
 };
 
-function getActivePlayer() {
-  api.Player.GetActivePlayers().then(function(data) {
-    var players = data.result;
-    if (_.isEmpty(players)) {
-      return;
-    }
-    state.player.id.update(_.first(players).playerid);
-  });
-}
+
+NowPlayingCard.prototype.updateItem = function() {
+  var item = state.nowplaying.val();
+
+  if (!item) {
+    this.updateDetails({});
+  }
+
+  // Determine the type of the now playing item
+  if (item.hasOwnProperty("episodeid"))
+  { // TV Show
+    this.updateDetails({
+      thumb: util.getImageUrl(item.thumbnail) || '/assets/thumb.png',
+      title: item.title,
+      description: item.plot,
+      header: item.showtitle,
+      subheader: "Season " + item.season
+    });
+  }
+  else if (item.hasOwnProperty("movieid"))
+  { // Movie
+    this.updateDetails({
+      thumb: util.getImageUrl(item.thumbnail) || '/assets/movie.png',
+      title: item.title,
+      description: item.plot,
+      header: item.title,
+      subheader: ""
+    });
+  }
+  else
+  { // Unknown - something else
+    this.updateDetails({
+      thumb: util.getImageUrl(item.thumbnail),
+      title: item.title,
+      description: item.plot,
+      header: item.title,
+      subheader: ""
+    });
+  }
+};
 
 
+NowPlayingCard.prototype.updateDetails = function(item) {
+    // The image (thumnnail) for the now playing item
+    $("#nowplaying-thumb").attr('src', item.thumb || '/assets/thumb.png');
+
+    // The title of the content that is playing
+    $("#nowplaying-episode-title").text(item.title);
+
+    // The description of the now playing content
+    $("#nowplaying-episode-plot").text(item.description);
+
+    // The text to show in the header
+    util.setHeader(item.header);
+
+    // The text to show in the subheader
+    util.setSubheader(item.subheader);
+};
+
+
+// TODO Combine these two
 NowPlayingCard.prototype.setNowPlayingEpisode = function(id) {
   var card = this;
   api.VideoLibrary.GetEpisodeDetails({
@@ -101,42 +135,12 @@ NowPlayingCard.prototype.setNowPlayingEpisode = function(id) {
     state.nowplaying.update(data.result.episodedetails);
     state.player.position.update(data.result.episodedetails.resume.position || 0);
     state.player.duration.update(data.result.episodedetails.runtime);
-    card.updateEpisode();
+    card.updateItem();
   });
 };
 
 
-NowPlayingCard.prototype.updateEpisode = function() {
-  var episode = state.nowplaying.val();
-  if (episode && episode.thumbnail) {
-    $("#nowplaying-thumb").attr('src', util.getImageUrl(episode.thumbnail));
-  } else {
-    $("#nowplaying-thumb").attr('src', "");
-  }
-  if (episode && episode.title) {
-    $("#nowplaying-episode-title").text(episode.title);
-  } else {
-    $("#nowplaying-episode-title").text("Title...");
-  }
-  if (episode && episode.plot) {
-    $("#nowplaying-episode-plot").text(episode.plot);
-  } else {
-    $("#nowplaying-episode-plot").text("Plot...");
-  }
-  if (episode && episode.showtitle) {
-    util.setHeader(episode.showtitle);
-  } else {
-    util.setHeader("Foxi");
-  }
-  if (episode && episode.season) {
-    util.setSubheader("Season " + episode.season);
-  } else {
-    util.setSubheader("Now Playing");
-  }
-};
-
-
-// TODO Combine with above
+// TODO Combine these two
 NowPlayingCard.prototype.setNowPlayingMovie = function(id) {
   var card = this;
   api.VideoLibrary.GetMovieDetails({
@@ -145,32 +149,8 @@ NowPlayingCard.prototype.setNowPlayingMovie = function(id) {
     state.nowplaying.update(data.result.moviedetails);
     state.player.position.update(data.result.moviedetails.resume.position || 0);
     state.player.duration.update(data.result.moviedetails.runtime);
-    card.updateMovie();
+    card.updateItem();
   });
-};
-
-
-// TODO Combine with above
-NowPlayingCard.prototype.updateMovie = function() {
-  var movie = state.nowplaying.val();
-  if (movie && movie.thumbnail) {
-    $("#nowplaying-thumb").attr('src', util.getImageUrl(movie.thumbnail));
-  } else {
-    $("#nowplaying-thumb").attr('src', "");
-  }
-  if (movie && movie.title) {
-    $("#nowplaying-episode-title").text(movie.title);
-    util.setHeader(movie.title);
-  } else {
-    $("#nowplaying-episode-title").text("Title...");
-    util.setHeader("Foxi");
-  }
-  if (movie && movie.plot) {
-    $("#nowplaying-episode-plot").text(movie.plot);
-  } else {
-    $("#nowplaying-episode-plot").text("Plot...");
-  }
-  util.setSubHeader("Now Playing");
 };
 
 
@@ -180,6 +160,7 @@ NowPlayingCard.prototype.updatePlayPauseButton = function() {
 
 
 NowPlayingCard.prototype.updateSeekTimer = function() {
+  var self = this;
   var speed = state.player.speed.val();
   if (speed === 0 && this.seekTimer) {
     clearInterval(this.seekTimer);
@@ -188,9 +169,17 @@ NowPlayingCard.prototype.updateSeekTimer = function() {
     if (this.seekTimer) {
       clearInterval(this.seekTimer);
     }
+
+    // Workaround solution; when the phone goes into "standby" or something
+    // the interval timer doesn't fire, so it may be longer than a second
+    // between updates. This value should measure that time.
+    self.lastTick = parseInt(new Date().getTime() / 1000);
+
     this.seekTimer = setInterval(function() {
       var pos = state.player.position.val();
-      state.player.position.update(pos + 1);
+      var tickNow = parseInt(new Date().getTime() / 1000);
+      state.player.position.update(pos + (tickNow - self.lastTick));
+      self.lastTick = tickNow;
     }, 1000 * speed);
   }
 };
@@ -219,27 +208,20 @@ NowPlayingCard.prototype.updateSeekbar = function() {
 };
 
 
-// TODO Rewrite
 function seektime(secs) {
-  var x = secs;
-  var res = '';
-  var h = parseInt(x / 3600);
+  var h = parseInt(secs / 3600);
+  var xs = secs - h * 3600;
+  var m = parseInt(xs / 60);
+  var s = parseInt(xs - m * 60);
+
   if (h > 0) {
-    res += h + ':';
-    x -= h * 3600;
+    return h + ":" + ('0'+m).slice(-2) + ":" + ('0'+s).slice(-2);
+  } else if (m > 0) {
+    return m + ":" + ('0'+s).slice(-2);
+  } else {
+    return "0:" + ('0'+s).slice(-2);
   }
-  var m = parseInt(x / 60);
-  if (m < 10) {
-    res += '0';
-  }
-  res += m + ':';
-  x -= m * 60;
-  if (x < 10) {
-    res += '0';
-  }
-  res += x;
-  return res;
-};
+}
 
 
 NowPlayingCard.prototype.load = function() {

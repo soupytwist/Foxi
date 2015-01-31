@@ -38,7 +38,6 @@ module.exports.toCard = function(card) {
   activeCard = card;
 
   // TODO This is very sloppy. Don't really do this.
-  // I can't include CARDNUM here, suspect circular dependency doesn't work
   // Don't go back and forth between classic remote and now playing
   if (activeCard.num !== CARDNUM.NOWPLAYING && activeCard.num !== CARDNUM.CLASSIC_REMOTE) {
     this.lastCard = activeCard;

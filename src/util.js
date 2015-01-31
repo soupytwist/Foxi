@@ -53,6 +53,8 @@ function getImageUrl(img) {
   if (img.startsWith('image://')) {
     var src = decodeURIComponent(img.substr(8, img.length-9));
     if (src.startsWith('/')) {
+      // TODO This really need to be more robust. More testing required to figure out
+      // other strategies for loading images on the filesystem
       src = 'http://' + localStorage.cfg_host + ":8080/vfs/" + encodeURIComponent(src);
     }
     return src;
