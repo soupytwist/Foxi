@@ -8,25 +8,9 @@ module.exports = function(Handlebars) {
     var img = Handlebars.escapeExpression(this.thumbnail);
     var src = util.getImageUrl(img);
     if (src) {
-      return new Handlebars.SafeString('<img alt="thumb" src="'+src+'">');
+      return new Handlebars.SafeString('<img alt="thumb" data-image-size="list" src="'+src+'">');
     }
     return new Handlebars.SafeString('<img alt="missing" src="">');
-  });
-
-  Handlebars.registerHelper('img_banner', function() {
-    var img = Handlebars.escapeExpression(this.art.banner);
-    var title = Handlebars.escapeExpression(this.label);
-    var src = util.getImageUrl(img);
-
-    DB.getImage(src, function(res) {
-      if (res) {
-        $("img[data-cache-url='"+src+"']").attr("src", res.data);
-      } else {
-        imgUtil.cache(src, imgUtil.dimensions.tv_banner);
-      }
-    });
-    
-    return new Handlebars.SafeString('<img alt="'+title+'" src="/assets/banner.png" data-cache-url="'+src+'">');
   });
 
   Handlebars.registerHelper('tv_banner', function() {
@@ -35,19 +19,42 @@ module.exports = function(Handlebars) {
     var img = Handlebars.escapeExpression(this.art.banner);
     var src = util.getImageUrl(img);
     
-    return new Handlebars.SafeString('<a class="tv-banner selectable" data-show-name="'+title+'" data-show-id="'+tvshowid+'"><img data-cache-url="'+src+'" src="/assets/banner.png"><span>'+title+'</span></a>');
+    return new Handlebars.SafeString('<a class="tv-banner selectable" data-show-name="'+title+'" data-show-id="'+tvshowid+'"><img data-image-size="list" data-cache-url="'+src+'" src="/assets/banner.png"><span>'+title+'</span></a>');
   });
 
   Handlebars.registerHelper('img_season_art', function() {
     var img = Handlebars.escapeExpression(this.art.poster);
     var src = util.getImageUrl(img);
-    return new Handlebars.SafeString('<img data-cache-url="'+src+'" src="/assets/movie.png">');
+    return new Handlebars.SafeString('<img data-image-size="list" data-cache-url="'+src+'" src="/assets/movie.png">');
+  });
+
+  Handlebars.registerHelper('img_movie_art', function() {
+    var img = Handlebars.escapeExpression(this.art.poster);
+    var src = util.getImageUrl(img);
+    return new Handlebars.SafeString('<img data-image-size="list" data-cache-url="'+src+'" src="/assets/movie.png">');
+  });
+
+  Handlebars.registerHelper('img_movie_art_hq', function() {
+    var img = Handlebars.escapeExpression(this.art.poster);
+    var src = util.getImageUrl(img);
+    return new Handlebars.SafeString('<img data-image-size="hq" data-cache-url="'+src+'" src="/assets/movie.png">');
   });
 
   Handlebars.registerHelper('img_episode_art', function() {
     var img = Handlebars.escapeExpression(this.art.thumb);
     var src = util.getImageUrl(img);
-    return new Handlebars.SafeString('<img data-cache-url="'+src+'" src="/assets/thumb.png">');
+    return new Handlebars.SafeString('<img data-image-size="list" data-cache-url="'+src+'" src="/assets/thumb.png">');
   });
 
+  Handlebars.registerHelper('img_episode_art_recent', function() {
+    var img = Handlebars.escapeExpression(this.art.thumb);
+    var src = util.getImageUrl(img);
+    return new Handlebars.SafeString('<img data-image-size="recent" data-cache-url="'+src+'" src="/assets/thumb.png">');
+  });
+
+  Handlebars.registerHelper('img_episode_art_hq', function() {
+    var img = Handlebars.escapeExpression(this.art.thumb);
+    var src = util.getImageUrl(img);
+    return new Handlebars.SafeString('<img data-image-size="hq" data-cache-url="'+src+'" src="/assets/thumb.png">');
+  });
 };

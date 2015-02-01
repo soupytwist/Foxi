@@ -15,6 +15,9 @@ var dimensions = {
     list: {
       width: 98, height: 55
     },
+    recent: {
+      width: 200, height: 112
+    },
     hq: {
       width: 320, height: 180
     }
@@ -51,23 +54,20 @@ function cache(url, sizes, whenLoaded) {
       console.log("Encoded " + url);
 
       var thumbnailsReady = [];
-
-      for (var label in sizes) {
-        //XXX
-        /* jshint ignore:start */
-        thumbnailsReady.push(createThumbnail(data, sizes[label]).then(function(thumbData) {
-          // TODO Store by size
-          DB.addImage(url, thumbData);
-          return thumbData;
-        }));
-        /* jshint ignore:end */
-        // TODO Just makes on thumb for now
-        break;
+      var res = {};
+      
+      function cb(thumbData) {
+        console.log("created thumbnail for size: " + this.label + " " + this.url);
+        res[this.label] = thumbData;
+        try { DB.addImage(this.url, this.label, thumbData); } catch (e) { }
       }
 
-      Promise.all(thumbnailsReady).then(function(thumbs) {
-        // TODO Callback with correct thumb
-        resolve(thumbs[0]);
+      for (var label in sizes) {
+        thumbnailsReady.push(createThumbnail(data, sizes[label]).then(cb.bind({label: label, url: url})));
+      }
+
+      Promise.all(thumbnailsReady).then(function() {
+        resolve(res);
       });
     };
 
@@ -77,7 +77,7 @@ function cache(url, sizes, whenLoaded) {
 
 function createThumbnail(src, size) {
   return new Promise(function(resolve, reject) {
-    console.log("Creating thumbnail ["+size.width+"x"+size.height+"] of " + src);
+    console.log("Creating thumbnail ["+size.width+"x"+size.height+"]");
     var img = new Image();
 
     img.onload = function() {
@@ -107,15 +107,19 @@ function loadImages(elements, dims, timeout) {
 
   $(elements).forEach(function(elm) {
     var src = $(elm).attr('data-cache-url');
+    var size = $(elm).attr('data-image-size') || 'list';
 
     var p = new Promise(function(resolve, reject) {
-      DB.getImage(src, function(res) {
+      DB.getImage(src, size, function(res) {
         $(elm).removeAttr('data-cache-url');
+        $(elm).removeAttr('data-image-size');
         if (res) {
           $(elm).on("load", resolve).attr("src", res.data).parent().addClass("cache-loaded");
         } else {
           cache(src, dims).then(function(data) {
-            $(elm).on("load", resolve).attr("src", data).parent().addClass("cache-loaded");
+            if (data.hasOwnProperty(size)) {
+              $(elm).on("load", resolve).attr("src", data[size]).parent().addClass("cache-loaded");
+            }
           });
         }
       });

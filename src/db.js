@@ -7,12 +7,12 @@ var FoxiDB = {
     this.db.open(callback);
   },
 
-  addImage: function db_addImage(uri, data, callback) {
-    this.db.createImage(uri, data, callback);
+  addImage: function db_addImage(uri, size, data) {
+    this.db.createImage(uri, size, data);
   },
 
-  getImage: function db_getImage(uri, callback) {
-    this.db.getImage(uri, callback);
+  getImage: function db_getImage(uri, size, callback) {
+    this.db.getImage(uri, size, callback);
   },
 
   clearImages: function db_clearImages(callback) {
@@ -57,44 +57,28 @@ FoxiDB.db = {
     }
   },
 
-  createImage: function db_createImage(uri, data, callback) {
+  createImage: function db_createImage(uri, size, data) {
     var transaction = this._db.transaction(['imgCache'], 'readwrite');
-
+    var imgData = { uri: size+"@"+uri, data: data };
     var objectStore = transaction.objectStore('imgCache');
-    var readRequest = objectStore.get(uri);
-    readRequest.onsuccess = function onReadSuccess(event) {
-      var imgData = event.target.result;
-      if (imgData) {
-        if (callback)
-          callback();
-        return;
-      } else {
-        imgData = {
-          uri: uri,
-          data: data
-        };
-      }
+    var writeRequest = objectStore.add(imgData);
 
-      var writeRequest = objectStore.add(imgData);
+    writeRequest.onsuccess = function onWriteSuccess(event) {
+      console.log('successfully wrote image data ' + imgData.uri);
+    };
 
-      writeRequest.onsuccess = function onWriteSuccess(event) {
-        if (callback)
-          callback();
-      };
-
-      writeRequest.onerror = function onError(event) {
-        console.log('error writing image data');
-      };
+    writeRequest.onerror = function onError(event) {
+      console.log('error writing image data:' + imgData.uri);
     };
 
     transaction.onerror = function dbTransactionError(e) {
-      console.log('Transaction error while trying to save image data ' + uri);
+      console.log('Transaction error while trying to save image data ' + imgData.uri);
     };
   },
 
-  getImage: function db_getPlace(uri, callback) {
+  getImage: function db_getPlace(uri, size, callback) {
     var db = this._db;
-    var request = db.transaction('imgCache').objectStore('imgCache').get(uri);
+    var request = db.transaction('imgCache').objectStore('imgCache').get(size+"@"+uri);
 
     request.onsuccess = function onSuccess(event) {
       callback(event.target.result);
@@ -104,7 +88,6 @@ FoxiDB.db = {
       if (event.target.errorCode == IDBDatabaseException.NOT_FOUND_ERR)
         callback();
     };
-
   },
 
   clearImages: function db_clearImages(callback) {

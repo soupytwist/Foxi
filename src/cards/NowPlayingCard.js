@@ -5,6 +5,7 @@ var api = require("../rpcapi");
 var util = require("../util");
 var state = require("../state");
 var Observable = require("../observable");
+var imgutil = require("../img");
 var _ = require("lodash");
 
 // NOWPLAYING ------------------------------------------------------------------
@@ -78,7 +79,10 @@ NowPlayingCard.prototype.updateItem = function() {
   if (item.hasOwnProperty("episodeid"))
   { // TV Show
     this.updateDetails({
-      thumb: util.getImageUrl(item.thumbnail) || '/assets/thumb.png',
+      thumb: util.getImageUrl(item.thumbnail),
+      dimensions: imgutil.tv_thumb,
+      img_size: 'hq',
+      placeholder_img: '/assets/thumb.png',
       title: item.title,
       description: item.plot,
       header: item.showtitle,
@@ -88,7 +92,10 @@ NowPlayingCard.prototype.updateItem = function() {
   else if (item.hasOwnProperty("movieid"))
   { // Movie
     this.updateDetails({
-      thumb: util.getImageUrl(item.thumbnail) || '/assets/movie.png',
+      thumb: util.getImageUrl(item.thumbnail),
+      dimensions: imgutil.movie,
+      img_size: 'hq',
+      placeholder_img: '/assets/movie.png',
       title: item.title,
       description: item.plot,
       header: item.title,
@@ -98,7 +105,7 @@ NowPlayingCard.prototype.updateItem = function() {
   else
   { // Unknown - something else
     this.updateDetails({
-      thumb: util.getImageUrl(item.thumbnail),
+      placeholder_img: util.getImageUrl(item.thumbnail),
       title: item.title,
       description: item.plot,
       header: item.title,
@@ -110,7 +117,16 @@ NowPlayingCard.prototype.updateItem = function() {
 
 NowPlayingCard.prototype.updateDetails = function(item) {
     // The image (thumnnail) for the now playing item
-    $("#nowplaying-thumb").attr('src', item.thumb || '/assets/thumb.png');
+    $("#nowplaying-thumb").attr('src', item.placeholder_img);
+
+    // If we have a cached thumbnail, load it
+    if (item.thumb) {
+      $("#nowplaying-thumb").attr('data-cache-url', item.thumb);
+      $("#nowplaying-thumb").attr('data-image-size', item.img_size);
+
+      // Start loading
+      imgutil.loadImages($("#nowplaying-thumb"), item.dimensions);
+    }
 
     // The title of the content that is playing
     $("#nowplaying-episode-title").text(item.title);
