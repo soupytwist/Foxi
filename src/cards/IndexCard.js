@@ -17,9 +17,8 @@ IndexCard.prototype.show = function() {
   state.toCard(this);
   util.setHeader("Foxi");
   util.setSubheader();
-  util.hideBackButton();
-  util.showSettingsButton(function() {
-    CARDS.SETTINGS.activate();
+  util.showBackButton(function() {
+    CARDS.CONNECTION.activate();
   });
 };
 

@@ -60,11 +60,11 @@ window.onload = function() {
 
     if (localStorage.cfg_host && localStorage.cfg_port) {
       // If we have a saved connection, reconnect
-      CARDS.SETTINGS.tryConnect();
+      CARDS.CONNECTION.tryConnect();
 
     } else {
       // Prompt the user to enter the host information
-      CARDS.SETTINGS.activate();
+      CARDS.CONNECTION.activate();
     }
   });
 

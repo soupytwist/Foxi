@@ -1,18 +1,12 @@
-<form id="cfg-form">
-  <p>
-    <input id="cfg-host-field" type="text" placeholder="Host" required="" value="{{host}}">
-    <button type="reset">Clear</button>
-  </p>
-  <p>
-    <input id="cfg-port-field" type="number" required="" value="{{port}}">
-    <button type="reset">Clear</button> 
-  </p>
-  <p>
-    <a id="cfg-connect-btn" class="bb-button recommend" href="#">Connect</a> 
-  </p>
-  <p>
-    <select id="cfg-effect">
-    {{#each effect_choices}}<option value="{{@key}}">{{this}}</option>{{/each}}
-    </select>
-  </p>
+<form id="settings-form">
+  <fieldset>
+    <legend class="action">Animations</legend>
+    <section>
+      <p>
+        <select id="cfg-effect">
+        {{#each effect_choices}}<option value="{{@key}}">{{this}}</option>{{/each}}
+        </select>
+      </p>
+    </settings>
+  </fieldset>
 </form>

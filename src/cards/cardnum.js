@@ -1,7 +1,8 @@
 module.exports = {
   NONE:           -1,
-  SETTINGS:       0,
+  CONNECTION:     0,
   INDEX:          1,
+  SETTINGS:       2,
 
   TVSHOWS:        10,
   SEASONS:        11,

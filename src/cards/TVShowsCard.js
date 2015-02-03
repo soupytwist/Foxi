@@ -20,7 +20,6 @@ TVShowsCard.prototype.show = function() {
   util.showBackButton(function() {
     CARDS.INDEX.activate();
   });
-  util.hideSettingsButton();
 };
 
 TVShowsCard.prototype.load = function() {

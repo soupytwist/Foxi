@@ -18,9 +18,18 @@ a {
   outline: 0;
 }
 
-#cfg-form {
+form {
+  -moz-box-sizing: border-box;
+  padding: 0 1.5rem;
+
   input {
     -moz-box-sizing: border-box;
+  }
+  legend {
+    -moz-box-sizing: border-box;
+  }
+  select {
+    padding: 1rem 0.5rem;
   }
 }
 
@@ -105,7 +114,7 @@ ul.banner-list {
     overflow-x: hidden;
     width: ~"calc(100% + 8px)";
 
-    > ul {
+    > ul, form {
       width: ~"calc(100% - 8px)";
     }
   }
@@ -306,12 +315,18 @@ ul.banner-list {
 
 #card-index {
   #index-list {
+    padding-bottom: 8rem;
+
     li {
       font-size: 3rem;
       line-height: 6rem;
 
       a {
         display: block;
+        
+        span {
+          margin-left: 12px;
+        }
 
         &:after {
           content: "";
@@ -373,6 +388,7 @@ ul.banner-list {
   }
   #volume-indicator {
     transition: opacity 0ms;
+    background: rgba(51,204,204,0.8);
     opacity: 1;
   }
   #volume-indicator.fade {
@@ -388,8 +404,11 @@ ul.banner-list {
   width: 100%;
   color: white;
   font-weight: normal;
-  padding: 0 16px;
-  box-sizing: border-box;
+
+  h3, p {
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
 
   #nowplaying-thumb {
     width: 100%;

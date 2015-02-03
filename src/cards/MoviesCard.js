@@ -20,7 +20,6 @@ MoviesCard.prototype.show = function() {
   util.showBackButton(function() {
     CARDS.INDEX.activate();
   });
-  util.hideSettingsButton();
 };
 
 MoviesCard.prototype.load = function() {

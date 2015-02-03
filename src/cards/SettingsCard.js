@@ -20,54 +20,30 @@ function SettingsCard() {
 SettingsCard.prototype = Object.create(Card.prototype);
 
 SettingsCard.prototype.show = function() {
+  Card.prototype.show.call(this);
   state.toCard(this);
   util.setHeader("Settings");
-  util.hideBackButton();
-  util.hideSettingsButton();
+  util.showBackButton(function() {
+    CARDS.INDEX.activate();
+  });
 };
 
 SettingsCard.prototype.load = function() {
   var card = this;
   card.render('settings', {
-    host: localStorage.cfg_host,
-    port: localStorage.cfg_port,
-    effect: localStorage.cfg_effect || "swoop",
     effect_choices: EFFECTS
   });
 
   $("#cfg-effect").on("change", function() {
     localStorage.cfg_effect = $(this).val();
     card.prepare();
-  });
-
-  $("#cfg-connect-btn").on('click', function() {
-    var host = $("#cfg-host-field").val();
-    var port = $("#cfg-port-field").val();
-    localStorage.cfg_host = host;
-    localStorage.cfg_port = port;
-    $("#cfg-connect-btn").removeClass("recommend");
-    card.tryConnect();
-  });
+  }).val(localStorage.cfg_effect || "blur");
 
   this.show();
 };
 
-SettingsCard.prototype.tryConnect = function() {
-  api.rpc.connect(localStorage.cfg_host, localStorage.cfg_port).then(
-      // Success
-      function() {
-        CARDS.INDEX.activate();
-      },
-      // Error
-      function() {
-        $("#cfg-connect-btn").addClass("recommend");
-        CARDS.SETTINGS.activate();
-      }
-  );
-};
-
 SettingsCard.prototype.prepare = function() {
-  var effect = localStorage.cfg_effect || "swoop";
+  var effect = localStorage.cfg_effect || "blur";
   $("#main").attr("class", "animate-"+effect);
 };
 

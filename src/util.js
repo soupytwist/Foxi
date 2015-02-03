@@ -3,27 +3,11 @@ function hideBackButton() {
 }
 
 
-function hideSettingsButton() {
-  $("#settings-button").hide();
-}
-
-
 function showBackButton(action) {
-  hideSettingsButton();
   if (action) {
     $("#back-button").show().off('click').on('click', action);
   } else {
     $("#back-button").show();
-  }
-}
-
-
-function showSettingsButton(action) {
-  hideBackButton();
-  if (action) {
-    $("#settings-button").show().off('click').on('click', action);
-  } else {
-    $("#settings-button").show();
   }
 }
 
@@ -81,9 +65,7 @@ function unfreezeUI() {
 
 
 module.exports.hideBackButton = hideBackButton;
-module.exports.hideSettingsButton = hideSettingsButton;
 module.exports.showBackButton = showBackButton;
-module.exports.showSettingsButton = showSettingsButton;
 module.exports.setHeader = setHeader;
 module.exports.setSubheader = setSubheader;
 module.exports.getImageUrl = getImageUrl;
