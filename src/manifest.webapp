@@ -10,8 +10,12 @@
   "default_locale": "en",
   "type": "privileged",
   "permissions": {
-    "systemXHR": true,
-    "storage": true
+    "systemXHR": {
+      "description": "Required to download images (thumbnails, DVD covers, etc)."
+    },
+    "storage": {
+      "description": "Required to store image thumbnails."
+    }
   },
   "orientation": "portrait-primary",
   "icons": {

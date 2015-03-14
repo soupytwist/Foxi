@@ -46,7 +46,7 @@ ConnectionCard.prototype.tryConnect = function() {
       // Error
       function() {
         $("#cfg-connect-btn").addClass("recommend");
-        CARDS.SETTINGS.activate();
+        CARDS.CONNECTION.activate();
       }
   );
 };
