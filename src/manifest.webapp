@@ -6,12 +6,14 @@
     "name": "Nick Smith",
     "url": "https://github.com/soupytwist/Foxi"
   },
+  "version": "0.1.0",
   "default_locale": "en",
   "type": "privileged",
   "permissions": {
     "systemXHR": true,
     "storage": true
   },
+  "orientation": "portrait-primary",
   "icons": {
     "32": "/icons/foxi_32.png",
     "60": "/icons/foxi_60.png",

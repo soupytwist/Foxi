@@ -71,8 +71,11 @@ NowPlayingCard.prototype.deactivate = function() {
 NowPlayingCard.prototype.updateItem = function() {
   var item = state.nowplaying.val();
 
-  if (!item) {
-    this.updateDetails({});
+  if (!item || Object.keys(item).length === 0) {
+    this.updateDetails({
+      placeholder_img: '/assets/thumb.png'
+    });
+    return;
   }
 
   // Determine the type of the now playing item
@@ -264,6 +267,20 @@ NowPlayingCard.prototype.load = function() {
     var playerid = state.player.id.val();
     if (playerid !== -1) {
       api.Player.Seek({ playerid: playerid, value: "smallbackward" });
+    }
+  });
+
+  $("#nowplaying-skip-forward").on('click', function() {
+    var playerid = state.player.id.val();
+    if (playerid !== -1) {
+      api.Player.Seek({ playerid: playerid, value: "bigforward" });
+    }
+  });
+
+  $("#nowplaying-skip-back").on('click', function() {
+    var playerid = state.player.id.val();
+    if (playerid !== -1) {
+      api.Player.Seek({ playerid: playerid, value: "bigbackward" });
     }
   });
 

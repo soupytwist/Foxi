@@ -31,10 +31,15 @@ image is retrieved once, it is cached on the device to reduce bandwidth and
 increase performance. This requires the "storage" permission for storing image
 thumbnails in IndexedDB.
 
+### Chanelog
+
+* *v0.1.0*: Initial Release; supports Movies and TV Shows
+
 ### License
 GNU GPLv3
 
 ### Support
 Please report any issues you have on the Github issue tracker for this project.
 This is under active development and hasn't yet been extensively tested, so
-feedback and suggestions are very welcome and appreciated!
+feedback and suggestions are very welcome and appreciated! Pull requests
+welcome!

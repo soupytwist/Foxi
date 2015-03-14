@@ -39,6 +39,10 @@ SettingsCard.prototype.load = function() {
     card.prepare();
   }).val(localStorage.cfg_effect || "blur");
 
+  $("#update-library").on("click", function() {
+    api.VideoLibrary.Scan({});
+  });
+
   this.show();
 };
 

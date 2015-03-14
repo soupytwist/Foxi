@@ -450,8 +450,7 @@ ul.banner-list {
   position: relative;
   text-align: center;
   font-size: calc(@npc-row-height*0.8);
-  margin: 0;
-  padding: 0;
+  margin: 0; padding: 0;
   height: @npc-row-height;
   line-height: @npc-row-height;
   top: 0;
@@ -534,4 +533,9 @@ ul.banner-list {
   top: 0;
   left: 0;
   z-index: 9999;
+}
+
+[data-icon].icon-small:before {
+  font-size: 18px;
+  line-height: 30px;
 }
