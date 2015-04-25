@@ -1,4 +1,5 @@
 module.exports = function(grunt) {
+  "use strict";
 
   // Project configuration.
   grunt.initConfig({
@@ -15,6 +16,16 @@ module.exports = function(grunt) {
           "dist/style.css": "style/less/main.less"
         }
       },
+    },
+    babel: {
+      options: {
+        sourceMap: false
+      },
+      dist: {
+        files: {
+          'dist/app.js': 'build/app.browserfied.js'
+        }
+      }
     },
     copy: {
       build: {
@@ -64,7 +75,7 @@ module.exports = function(grunt) {
     browserify: {
       dist: {
         files: {
-          'dist/app.js': ['build/app.js'],
+          'build/app.browserfied.js': ['build/app.js'],
         },
         options: {
           alias: ['./bower_components/handlebars/handlebars.min.js:handlebars']
@@ -117,7 +128,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-handlebars');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-less');
+  grunt.loadNpmTasks('grunt-babel');
 
   // Default task(s).
-  grunt.registerTask('default', ['jshint', 'copy:build', 'execute', 'handlebars', 'browserify', 'less', 'copy:dist']);
+  grunt.registerTask('default', ['jshint', 'copy:build', 'execute', 'handlebars', 'browserify', 'less', 'copy:dist', 'babel']);
 };

@@ -1,31 +1,39 @@
+"use strict";
+
 var Handlebars = require('handlebars');
 require("../handlebars_helpers")(Handlebars);
 var templates = require("../templates")(Handlebars);
 var util = require("../util");
 
-// CARD ------------------------------------------------------------------------
-function Card(num, id) {
-  this.num = num;
-  this.id = id;
-  this.loaded = false;
-}
-
-Card.prototype.activate = function(forceReload) {
-  if (forceReload || !this.loaded) {
-    this.load();
-    return;
+class Card {
+  constructor(model) {
+    this.model = model;
+    this.loaded = false;
   }
-  this.show();
-};
-Card.prototype.deactivate = function() {};
 
-Card.prototype.render = function(tplName, data, elem) {
-  console.log("Rendering: " + tplName);
-  $(elem || this.id).html(templates[tplName](data));
-};
-Card.prototype.show = function() {
-  util.unfreezeUI();
-};
-Card.prototype.load = function() {};
+  activate(forceReload) {
+    if (forceReload || !this.loaded) {
+      this.load();
+      return;
+    }
+    this.show();
+  }
+
+
+  deactivate() {
+  }
+
+  render(tplName, data, elem) {
+    console.log("Rendering: " + tplName);
+    $(elem || this.id).html(templates[tplName](data));
+  }
+
+  show() {
+    util.unfreezeUI();
+  }
+
+  load() {
+  }
+}
 
 module.exports = Card;
