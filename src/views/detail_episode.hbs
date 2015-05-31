@@ -1,0 +1,13 @@
+<div class="view detail">
+  <img class="thumbnail" src="{{thumbnail}}">
+  <div class="view-item-actions">
+    {{#if this.capabilities.play}}
+    <button class="action" data-verb="play">
+      Play <span data-icon="play"></span>
+    </button>
+    {{/if}}
+  </div>
+
+  <h1>{{episode_title}}</h1>
+  <p>{{plot}}</p>
+</div>

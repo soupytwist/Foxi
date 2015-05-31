@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Foxi</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
+    <link rel="manifest" href="manifest.webapp">
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/transitions.css">
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/util.css">
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/buttons.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/drawer.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/lists.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/layout.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/headers.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/switches.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/status.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/seekbars.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/scrolling.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/progress_activity.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/confirm.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/action_menu.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/tabs.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/value_selector.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/building-blocks/style/input_areas.css" >
+    <link rel="stylesheet" type="text/css" href="bower_components/gaia-icons/gaia-icons-embedded.css" >
+    <link rel="stylesheet" type="text/css" href="style.css" >
+  </head>
+  <body>
+    <section id="app" role="region" class="skin-dark">
+      <header id="header">
+        <menu type="toolbar">
+          <button id="btn-volume">
+            <svg viewBox="0 0 34 34">
+              <path id="volume-guage" fill="none" stroke-width="2"></path>
+              <text id="volume-guage-text" x="18" y="22"
+                text-anchor="middle" font-size="10"></text>
+            </svg>
+          </button>
+        </menu>
+        <button id="back-button" data-icon="back"></button>
+        <h1 id="window-title">Foxi</h1>
+      </header>
+      <header id="subheader">
+        <h2 id="window-subtitle"></h2>
+      </header>
+
+      <div id="cardContainer" role="main" class="animate-blur"></div>
+
+      <div id="volume" class="hide">
+        <button id="control-volume-up" data-icon="add"></button>
+        <span id="control-volume-label"></span>
+        <button id="control-volume-down" data-icon="minus"></button>
+        <button id="control-volume-mute" data-icon="mute"></button>
+        <button id="control-volume-close" data-icon="close"></button>
+      </div>
+
+      <footer id="controls" class="collapsed">
+        <div id="control-classic">
+          <button id="control-home">Home</button>
+          <button id="control-up" data-icon="back"></button>
+          <button id="control-info">Info</button>
+          <button id="control-left" data-icon="back"></button>
+          <button id="control-select" data-icon="focus-locked"></button>
+          <button id="control-right" data-icon="forward"></button>
+          <button id="control-back" data-icon="arrow-back"></button>
+          <button id="control-down" data-icon="forward"></button>
+          <button id="control-context-menu" data-icon="more"></button>
+        </div>
+
+        <div id="control-nowplaying">
+          <div id="control-nowplaying-content"></div>
+          <div id="control-seek" role="slider">
+            <label id="control-seek-cur">&ndash;</label>
+            <label id="control-seek-end">&ndash;</label>
+            <div id="control-seek-bar">
+              <progress id="control-seek-progress" value="0" max="0"></progress>
+              <button id="control-seek-handler">handler</button>
+            </div>
+          </div>
+        </div>
+
+        <progress id="control-progress" value="0" max="0"></progress>
+        <button id="control-playlist" data-icon="menu"></button>
+        <button id="control-seek-back" data-icon="seek-back"></button>
+        <button id="control-playpause" data-icon="play"></button>
+        <button id="control-seek-forward" data-icon="seek-forward"></button>
+        <button id="control-handle" data-icon="dialpad"></button>
+        <button id="control-shuffle" data-icon="shuffle" x-disabled></button>
+        <button id="control-skip-back" data-icon="skip-back"></button>
+        <button id="control-stop" data-icon="stop"></button>
+        <button id="control-skip-forward" data-icon="skip-forward"></button>
+        <button id="control-mode" data-icon="keyboard"></button>
+      </footer>
+
+      <footer id="warning-disconnected">
+        Connection lost <span data-icon="crashed"></span>
+      </footer>
+
+      <form id="dialog-connecting" role="dialog" data-type="confirm">
+        <section>
+          <h1>Connecting...</h1>
+          <p><progress></progress></p>
+        </section>
+        <menu>
+          <button type="button" id="dialog-connecting-cancel" class="full">Cancel</button>
+        </menu>
+      </form>
+    </section>
+    <script src="main.browserified.js"></script>
+  </body>
+</html>

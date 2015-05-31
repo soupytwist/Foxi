@@ -11,9 +11,23 @@ a {
   color: white;
   text-decoration: none;
 }
+
 #back-button, #settings-button {
   color: #999999;
 }
+
+#back-button {
+
+  &:not(.visible) {
+    display: none;
+  }
+}
+
+p.error-message {
+  margin: 1em auto;
+  color: rgb(255,0,0);
+}
+
 :focus {
   outline: 0;
 }
@@ -34,96 +48,298 @@ form {
 }
 
 #app {
+  display: flex;
+  flex-direction: column;
+
+  #warning-disconnected {
+    max-height: 0;
+    transition: max-height 250ms ease;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    overflow: hidden;
+    background-color: rgb(255, 32, 32);
+    color: #ffffff;
+    text-align: center;
+    z-index: 1000;
+
+    [data-icon] {
+      margin-left: 0.8rem;
+
+      &:before {
+        vertical-align: middle;
+      }
+    }
+  }
+
+  &.disconnected {
+    #warning-disconnected {
+      max-height: 30px;
+    }
+
+    #controls {
+      max-height: 0!important;
+    }
+  }
+
   #subheader {
-    transition: height 400ms ease;
-    height: 0;
-  }
-  &.subheader-visible #subheader {
-    height: 34px;
-  }
-}
+    #window-subtitle {
+      overflow: hidden;
+      padding: 0.8rem 3rem;
+      transition: height 400ms ease, padding 400ms ease;
 
-ul.banner-list {
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
-  width: 100%;
-  
-  li {
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-    position: relative;
-
-    a.tv-banner {
-      position: relative;
-      display: block;
-      margin: 0;
-      padding: 0;
-
-      > span {
-        top: 0;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        display: block;
-        margin: 0;
-        padding: 12px;
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        z-index: 100;
-      }
-
-      &.cache-loaded > span {
-        display: none;
-      }
-
-      > img {
-        width: 100%;
-        z-index: 99;
-        margin: 0;
-        padding: 0;
+      &:empty {
+        height: 0;
+        padding: 0 3rem;
       }
     }
   }
 }
 
-#main.animating {
+.list.view {
+  margin: 0 0 66px 0;
+  padding: 0;
+  list-style-type: none;
+  width: 100%;
+  
+  li.view-item {
+    maring: 0;
+    padding: 0.5rem 0;
+    list-style-type: none;
+    position: relative;
+    z-index: 80;
+
+    &.current {
+      background-image: repeating-linear-gradient(135deg, #003D43, #003D43 5rem, #00262A 5rem, #00262A 10rem);
+    }
+
+    .view-item-content {
+      z-index: 100;
+      position: relative;
+
+      &:after {
+        content: "";
+        clear: both;
+        display:table;
+      }
+
+      a.tv-banner {
+        position: relative;
+        display: block;
+        margin: 0;
+        padding: 0;
+
+        > span {
+          top: 0;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          display: block;
+          margin: 0;
+          padding: 12px;
+          box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          z-index: 100;
+        }
+
+        &.cache-loaded > span {
+          display: none;
+        }
+
+        > img {
+          width: 100%;
+          z-index: 99;
+          margin: 0;
+          padding: 0;
+        }
+      }
+
+      a.item-source {
+        display: block;
+        line-height: 5rem;
+        height: 5rem;
+        font-size: 3.5rem;
+      }
+
+      aside {
+        width: 30%;
+        margin-right: 1rem;
+        display: block;
+        float: left;
+        
+        img {
+          width: 100%;
+        }
+      }
+
+      p {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      p.season-label {
+        padding-top: 1rem;
+        display: block;
+        font-size: 2rem;
+        color: @clr-maintext;
+      }
+
+      p.season-episode-ct {
+        display: block;
+        font-size: 1.2rem;
+        color: @clr-subtext;
+      }
+
+      p.episode-title {
+        padding-top: 1rem;
+        font-size: 2rem;
+        color: @clr-maintext;
+      }
+
+      p.episode-number {
+        font-size: 1.2rem;
+        color: @clr-subtext;
+      }
+    }
+    
+    .actions-shield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 0;
+      width: 100%;
+      background-color: rgba(0,0,0,0);
+      transition: background-color 500ms ease;
+    }
+
+    &.selecting {
+      transition: transform 600ms ease 400ms;
+      transform: scale(0.95, 0.95);
+    }
+
+    &.selected {    
+      z-index: 90;
+
+      .actions-shield {
+        height: 100%;
+        background-color: rgba(0,0,0,0.7);
+      }
+
+      .view-item-actions {
+        max-height: 8rem;
+        margin-top: 1rem;
+      }
+    }
+  }
+}
+
+.view-item-actions {
+  max-height: 0;
+  line-height: 3rem;
+  display: flex;
+  overflow: hidden;
+  flex-direction: row;
+  margin: 0;
+  transition: max-height 250ms ease-out, margin 250ms ease-out;
+  position: relative;
+  z-index: 100;
+
+  .action {
+    color: #FFF;
+    display: block;
+    background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.05);
+    background-color: #454545;
+    border-radius: 0px;
+    overflow: hidden;
+    text-align: center;
+    height: auto;
+    min-height: 4rem;
+    text-overflow: initial;
+    white-space: normal;
+    line-height: 2rem;
+    padding: 1rem 1.2rem;
+
+    &:not(:last-child) {
+      border-right: 1px solid #666666;
+    }
+    
+    [data-icon] {
+      margin-left: 0.8rem;
+
+      &:before {
+        vertical-align: middle;
+        font-size: inherit;
+      }
+    }
+  }
+}
+
+.detail.view {
+  margin: 0 0 132px 0;
+
+  .view-item-actions {
+    max-height: 8rem;
+    margin: 0;
+  }
+  
+  .poster-wrapper {
+    max-height: 32rem;
+    overflow: hidden;
+    transition: max-height 300ms ease;
+
+    &.expand {
+      max-height: 64rem;
+    }
+
+    img.poster {
+      width: 100%;
+    }
+  }
+
+  img.thumbnail {
+    width: 100%;
+  }
+
+  h1, h2, h3, h4, h5, h6, h7, p {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+
+  h1 {
+    color: @clr-maintext;
+  }
+
+  h2 {
+    color: @clr-subtext;
+  }
+
+  p {
+    color: @clr-subtext;
+  }
+}
+
+#cardContainer.animating {
   image-rendering: -moz-crisp-edges;
   text-rendering: optimizeSpeed;
 }
 
 
-#main {
+#cardContainer {
+  flex: 1 1 auto;
   background-color: #1B1B1B;
-  position: absolute;
-  width: 100%;
-  height: 100%;
+  position: relative;
 }
 
 .card {
-  position: absolute;
-  height: ~"calc(100% - 5rem)";
-  z-index: 20;
   width: 100%;
-
-  &.scrollable {
-    overflow-x: hidden;
-    width: ~"calc(100% + 8px)";
-
-    > ul, form {
-      width: ~"calc(100% - 8px)";
-    }
-  }
-}
-
-#app.subheader-visible {
-  .card.subheader-card {
-    height: ~"calc(100% - 5rem - 34px)";
-  }
+  height: 100%;
+  position: absolute;
+  overflow-x: hidden;
+  z-index: 20;
 }
 
 .animate-swoop .card {
@@ -205,152 +421,313 @@ ul.banner-list {
   }
 }
 
-#card-seasons, #card-movies {
-  ul.large-side-banners {
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-    width: 100%;
-
-    li {
-      margin: 0;
-      padding: 0;
-      list-style-type: none;
-      position: relative;
-
-      a {
-        display: block;
-
-        &:after {
-          content: "";
-          clear: both;
-          display:table;
-        }
-      }
-
-      aside {
-        width: 30%;
-        margin-right: 1rem;
-        display: block;
-        float: left;
-        
-        img {
-          width: 100%;
-        }
-      }
-
-      p {
-        display: block;
-
-        &:first-of-type {
-          padding-top: 1rem;
-        }
-
-        &.season-label {
-          font-size: 2rem;
-          color: @clr-maintext;
-        }
-        &.season-episode-ct {
-          font-size: 1.2rem;
-          color: @clr-subtext;
-        }
-      }
-    }
-  }
-}
-
-#card-episodes {
-  #episode-list {
-    .episode-list-item {
-      margin: 0;
-      padding: 0;
-      list-style-type: none;
-      position: relative;
-      width: 100%;
-
-      a {
-        display: block;
-
-        &:after {
-          content: "";
-          clear: both;
-          display:table;
-        }
-      }
-      
-      aside {
-        width: 30%;
-        display: block;
-        float: left;
-        margin-right: 1rem;
-
-        img {
-          width: 100%;
-        }
-      }
-
-      p {
-        display: block;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-
-        &:first-of-type {
-          padding-top: 1rem;
-        }
-
-        &.episode-title {
-          font-size: 2rem;
-          color: @clr-maintext;
-        }
-
-        &.episode-number {
-          font-size: 1.2rem;
-          color: @clr-subtext;
-        }
-      }
-    }
-  }
-}
-
-#card-index {
-  #index-list {
-    padding-bottom: 8rem;
-
-    li {
-      font-size: 3rem;
-      line-height: 6rem;
-
-      a {
-        display: block;
-        
-        span {
-          margin-left: 12px;
-        }
-
-        &:after {
-          content: "";
-          clear: both;
-          display:table;
-        }
-      }
-    }
-  }
-
-  .recent {
-    height: 12rem;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    white-space: nowrap;
-
-    img {
-      height: 100%;
-    }
-  }
-}
-
 #header, #subheader, #footer {
-  z-index: 50;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 200;
+}
+
+#controls {
+  position: fixed;
+  bottom: 0;
+  z-index: 999;
+  background-color: #000000;
+  max-height: 44px;
+  transition: max-height 250ms ease;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow: hidden;
+
+  &.expanded {
+    max-height: 100px;
+
+    &.nowplaying:not(.classic) {
+      max-height: 240px;
+
+      #control-nowplaying {
+        transition-delay: 250ms;
+        max-height: 132px;
+        margin-top: 8px;
+      }
+
+      #control-progress {
+        opacity: 0;
+      }
+    }
+
+    &.classic {
+      max-height: 320px;
+
+      #control-classic {
+        transition-delay: 250ms;
+        max-height: 206px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
+
+      #control-progress {
+        opacity: 0;
+      }
+    }
+  }
+
+  #control-handle {
+    position: relative;
+    top: 0px;
+    transition: top 250ms ease, border-radius 0s linear 250ms;
+  }
+
+  &.collapsed {
+    max-height: 10px!important;
+    
+    #control-progress {
+      height: 10px!important;
+      max-width: 80%;
+      margin-right: 20%;
+    }
+
+    #control-handle {
+      border-radius: 0;
+      top: -19px;
+    }
+  }
+
+  #control-progress {
+    flex: 0 0 100%;
+    height: 4px;
+    overflow: hidden;
+    transition: opacity 250ms ease, background-color 250ms linear;
+    background-color: #000;
+  }
+
+  &.nowplaying {
+    max-height: 44px;
+
+    #control-progress {
+      height: 4px;
+      background-color: #000;
+
+      &.pack-activity[value] {
+        background-image: repeating-linear-gradient(135deg, #003D43, #003D43 5rem, #00262A 5rem, #00262A 10rem);
+      }
+    }
+
+    #control-seek-progress.pack-activity[value] {
+      background-image: repeating-linear-gradient(135deg, #003D43, #003D43 5rem, #00262A 5rem, #00262A 10rem);
+    }
+  }
+
+  > button,
+  #control-classic > button {
+    flex: 1 0 20%;
+    height: @npc-row-height;
+    margin: 0 0 @npc-row-sep 0;
+    padding: 0;
+    text-align: center;
+    background-color: black;
+    color: white;
+
+    &:active {
+      background-color: #2B2B2B;
+    }
+
+    &:not(:active) {
+      transition: background-color 500ms linear;
+    }
+  }
+
+  button[data-icon]:before {
+    position: relative;
+    text-align: center;
+    font-size: calc(@npc-row-height*0.8);
+    margin: 0; padding: 0;
+    height: @npc-row-height;
+    line-height: @npc-row-height;
+    top: 0;
+    right: 0;
+  }
+
+  button[x-disabled] {
+    color: #444444;
+  }
+
+  #control-nowplaying {
+    flex: 0 0 100%;
+    max-height: 0;
+    transition: max-height 250ms ease 0s, margin 250ms ease 0s;
+    overflow: hidden;
+
+    #control-nowplaying-content {
+      max-height: 80px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: center;
+
+      aside {
+        flex: 1 1 30%;
+        position: relative;
+
+        img {
+          width: 100%;
+        }
+      }
+
+      .nowplaying-info {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        
+        > * {
+          margin: 0;
+        }
+
+        h3 {
+          font-size: 14px;
+        }
+        h4 {
+          font-size: 12px;
+        }
+      }
+    }
+
+    #control-seek {
+      height: @npc-row-height;
+      width: 90%;
+      margin: 8px 5%;
+      display: block;
+
+      progress {
+        background-color: #444444;
+      }
+
+      label {
+        color: #444444;
+      }
+    }
+  }
+
+  #control-classic {
+    flex: 0 0 100%;
+    max-height: 0;
+    transition: max-height 250ms ease 0s, margin 250ms ease 0s;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    button {
+      flex: 1 1 33%;
+      text-align: center;
+      height: 1.5 * @npc-row-height;
+    }
+
+    #control-up[data-icon]:before {
+      transform: rotate(90deg);
+    }
+
+    #control-down[data-icon]:before {
+      transform: rotate(90deg);
+    }
+  }
+}
+
+#volume {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0,0,0,0.85);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  box-sizing: border-box;
+  opacity: 1;
+  transition: opacity 300ms linear;
+
+  &.hide {
+    transition: opacity 300ms linear, top 0s linear 300ms, z-index 0s linear 300ms;
+    opacity: 0;
+    top: -10000px;
+    z-index: 0;
+  }
+
+  > button {
+    flex: 1 1 15%;
+    width: 30%;
+    margin: 1% auto;
+    text-align: center;
+    background-color: rgba(0,0,0,0);
+
+    &:first-child {
+      margin-top: ~"calc(50px + 1%)";
+    }
+
+    &:before {
+      position: static;
+      margin-top: 0.5rem;
+      color: #FFF;
+    }
+    
+    &:active {
+      background-color: rgba(43,43,43,0.85);;
+    }
+
+    &:not(:active) {
+      transition: background-color 500ms linear;
+    }
+  }
+
+  #control-volume-label {
+    font-size: 48px;
+    color: #FFF;
+    flex: 0 0 128px;
+    width: 128px;
+    margin: 5% auto 7.5% auto;
+    border-radius: 64px;
+    border: 2px solid #FFF;
+    text-align: center;
+    line-height: 128px;
+  }
+
+  #control-volume-mute {
+    &:before {
+      color: #FFF;
+      transition: color 150ms linear;
+    }
+  }
+
+  > button#control-volume-close {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    top: -1px;
+    right: -1px;
+  }
+}
+
+#app.muted {
+  #volume {
+    #control-volume-mute:before {
+      color:#F00; 
+    }
+  }
+
+  #btn-volume > svg {
+    path {
+      stroke: #000;
+    }
+    text {
+      fill: #000;
+    }
+  }
 }
 
 #overlay-volume {
@@ -397,86 +774,34 @@ ul.banner-list {
   }
 }
 
-#nowplaying-info {
-  position: absolute;
-  top: 0;
-  bottom: 32px;
+#btn-volume > svg {
   width: 100%;
-  color: white;
-  font-weight: normal;
+  margin: 10px 0;
 
-  h3, p {
-    padding: 0 16px;
-    box-sizing: border-box;
+  path {
+    stroke: #00BBFF;
+    transition: stroke 500ms linear;
   }
-
-  #nowplaying-thumb {
-    width: 100%;
-  }
-
-  #nowplaying-episode-plot {
-    margin-bottom: 64px;
-    font-weight: lighter;
-  }
-}
-
-#nowplaying-controls {
-  position: absolute;
-  margin: 0;
-  padding: 0;
-  bottom: calc(@npc-row-height - @npc-full-height);
-  height: @npc-full-height;
-  width: 100%;
-  background-color: black;
-  color: white;
-  transition: bottom 250ms ease;
-}
-
-#nowplaying-controls.expanded {
-  bottom: 0;
-}
-
-#nowplaying-controls > button {
-  width: 20%;
-  height: @npc-row-height;
-  margin: 0 0 @npc-row-sep 0;
-  padding: 0;
-  text-align: center;
-  background-color: black;
-  color: white;
-}
-
-#nowplaying-controls > button[data-icon]:before {
-  position: relative;
-  text-align: center;
-  font-size: calc(@npc-row-height*0.8);
-  margin: 0; padding: 0;
-  height: @npc-row-height;
-  line-height: @npc-row-height;
-  top: 0;
-  right: 0;
-}
-
-#nowplaying-controls > button[disabled] {
-  color: #444444;
-}
-
-#nowplaying-seek {
-  width: 90%;
-  margin: 0 5%;
-  height: @npc-row-height;
-  display: inline-block;
-
-  progress {
-    background-color: #444444;
-  }
-
-  label {
-    color: #444444;
+  
+  text {
+    fill: #00BBFF;
+    transition: fill 500ms linear;
+    font-style: normal;
   }
 }
 
 #dialog-connecting {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  widht: 100%;
+  height: 100%;
+
+  &.connecting {
+    display: block;
+  }
+
   background-color: rgba(0, 0, 0, 0.7);
 
   p {

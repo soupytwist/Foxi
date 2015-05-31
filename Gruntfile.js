@@ -1,11 +1,27 @@
 module.exports = function(grunt) {
   "use strict";
+  require('jit-grunt')(grunt);
 
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
-      all: ['Gruntfile.js', 'src/**.js']
+      source: {
+        files: {
+          src: ['src/**.js']
+        },
+        options: {
+          jshintrc: '.jshintrc'
+        }
+      },
+      test: {
+        files: {
+          src: ['test/**.js']
+        },
+        options: {
+          jshintrc: 'test/.jshintrc'
+        }
+      },
     },
     less: {
       development: {
@@ -13,25 +29,15 @@ module.exports = function(grunt) {
           paths: ["style/less"]
         },
         files: {
-          "dist/style.css": "style/less/main.less"
+          "app/style.css": "style/less/main.less"
         }
       },
-    },
-    babel: {
-      options: {
-        sourceMap: false
-      },
-      dist: {
-        files: {
-          'dist/app.js': 'build/app.browserfied.js'
-        }
-      }
     },
     copy: {
       build: {
         files: [
-          { expand: true, cwd: 'src', src: ['**'], dest: 'build/' },
-          { expand: true, cwd: 'lib', src: ['**'], dest: 'build/' }
+          { expand: true, cwd: 'src', src: ['js/**'], dest: 'build/js' },
+          { expand: true, src: 'lib/**', dest: 'build' }
         ]
       },
       dist: {
@@ -53,11 +59,6 @@ module.exports = function(grunt) {
         ]
       }
     },
-    execute: {
-      target: {
-        src: ['src/kodijs/gen_js.js']
-      }
-    },
     handlebars: {
       compile: {
         options: {
@@ -68,68 +69,98 @@ module.exports = function(grunt) {
           }
         },
         files: {
-          'build/templates.js': 'src/views/*.hbs'
+          'src/views/template_src.js': 'src/views/*.hbs'
         }
       }
     },
+    babel: {
+      options: {
+        sourceMap: true,
+        stage: 0,
+        modules: 'common'
+      },
+      test: {
+        files: [
+          { expand: true, cwd: 'test', src: ['**/*.js'], dest: 'build/test' },
+        ]
+      },
+      source: {
+        files: [
+          { expand: true, cwd: 'src', src: ['**/*.js'], dest: 'build/js' },
+        ]
+      }
+    },
     browserify: {
-      dist: {
+      source: {
         files: {
-          'build/app.browserfied.js': ['build/app.js'],
+          'app/main.browserified.js': ['node_modules/babel/polyfill.js', 'build/js/main.js'],
         },
         options: {
           alias: ['./bower_components/handlebars/handlebars.min.js:handlebars']
         },
         browserifyOptions: {
-          detectGlobals: false
+          detectGlobals: false,
+          debug: true
+        }
+      },
+      test: {
+        files: {
+          'build/test.browserified.js': ['node_modules/babel/polyfill.js', 'build/test/**/*.js'],
+        },
+        options: {
+          alias: ['./bower_components/handlebars/handlebars.min.js:handlebars']
+        },
+        browserifyOptions: {
+          detectGlobals: false,
+          debug: true
         }
       }
     },
-    uglify: {
-      options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
-      },
-      build: {
-        src: 'build/<%= pkg.name %>.js',
-        dest: 'dist/<%= pkg.name %>.min.js'
-      }
-    },
     watch: {
-      main: {
-        files: ['src/index.html', 'src/manifest.webapp'],
-        tasks: ['copy:build', 'browserify', 'copy:dist']
-      },
-      scripts: {
-        files: ['src/*.js', 'src/cards/*.js'],
-        tasks: ['jshint', 'copy:build', 'browserify', 'copy:dist']
-      },
-      apiscripts: {
-        files: ['src/kodijs/**'],
-        tasks: ['jshint', 'copy:build', 'execute', 'browserify', 'copy:dist']
+      default: {
+        files: ['src/**/*.js', 'test/**/*.js'],
+        tasks: ['newer:copy:build', 'newer:babel:source', 'newer:babel:test', 'browserify', 'jasmine']
       },
       templates: {
         files: ['src/views/*.hbs'],
-        tasks: ['jshint', 'copy:build', 'handlebars', 'browserify', 'copy:dist']
+        tasks: ['handlebars']
       },
       less: {
         files: ['style/**'],
         tasks: ['less']
       }
     },
+    jasmine: {
+      src: 'test/dummy.js',
+      options: {
+        specs: 'build/test.browserified.js'
+      }
+    }
   });
 
   // Load the plugin that provides the "uglify" task.
-  //grunt.loadNpmTasks('grunt-contrib-uglify');
-
+  /*
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-browserify');
-  grunt.loadNpmTasks('grunt-execute');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-handlebars');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-babel');
+  grunt.loadNpmTasks('grunt-contrib-jasmine');
+  grunt.loadNpmTasks('grunt-newer');
+  */
 
   // Default task(s).
-  grunt.registerTask('default', ['jshint', 'copy:build', 'execute', 'handlebars', 'browserify', 'less', 'copy:dist', 'babel']);
+  grunt.registerTask('default', [
+      'jshint',
+      'handlebars',
+      'copy:build',
+      'babel:source',
+      'babel:test',
+      'browserify',
+      'less',
+      'jasmine',
+      'watch'
+  ]);
 };

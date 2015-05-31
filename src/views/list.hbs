@@ -1,0 +1,29 @@
+<ul class="view list">
+  {{#each items}}
+  <li class="view-item">
+    <div class="view-item-content">
+      {{this.content_list}}
+    </div>
+    <div class="view-item-actions">
+      {{#if this.capabilities.detail}}
+      <button class="action" data-verb="detail">
+        Details <span data-icon="info"></span>
+      </button>
+      {{/if}}
+
+      {{#if this.capabilities.shuffle}}
+      <button class="action" data-verb="shuffle">
+        Shuffle <span data-icon="shuffle"></span>
+      </button>
+      {{/if}}
+
+      {{#if this.capabilities.play}}
+      <button class="action" data-verb="play">
+        Play <span data-icon="play"></span>
+      </button>
+      {{/if}}
+    </div>
+    <div class="actions-shield"></div>
+  </li>
+  {{/each}}
+</ul>

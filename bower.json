@@ -13,9 +13,9 @@
     "test",
     "tests"
   ],
-  "devDependencies": {
-    "handlebars": "~2.0.0",
+  "dependencies": {
     "building-blocks": "gh-pages",
-    "gaia-icons": "gaia-components/gaia-icons#~0.7.3"
+    "gaia-icons": "gaia-components/gaia-icons#~0.7.3",
+    "handlebars": "~3.0.3"
   }
 }

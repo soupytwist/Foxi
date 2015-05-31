@@ -1,0 +1,21 @@
+<div class="view detail">
+  <div class="poster-wrapper">
+    <img class="poster" src="{{poster}}">
+  </div>
+  <div class="view-item-actions">
+    {{#if this.capabilities.shuffle}}
+    <button class="action" data-verb="shuffle">
+      Shuffle <span data-icon="shuffle"></span>
+    </button>
+    {{/if}}
+
+    {{#if this.capabilities.play}}
+    <button class="action" data-verb="play">
+      Play <span data-icon="play"></span>
+    </button>
+    {{/if}}
+  </div>
+
+  <h2>{{genre}} &middot; {{year}}</h2>
+  <p>{{plot}}</p>
+</div>

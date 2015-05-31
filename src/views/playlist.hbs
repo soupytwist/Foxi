@@ -1,0 +1,21 @@
+<ul class="view list" id="playlist">
+  {{#each items}}
+  <li class="view-item" data-id="{{this.id}}">
+    <div class="view-item-content">
+      {{this.content_list}}
+    </div>
+    <div class="view-item-actions">
+      {{#if this.capabilities.detail}}
+      <button class="action" data-verb="detail">
+        Details <span data-icon="info"></span>
+      </button>
+      {{/if}}
+
+      <button class="action" data-verb="play">
+        Play <span data-icon="play"></span>
+      </button>
+    </div>
+    <div class="actions-shield"></div>
+  </li>
+  {{/each}}
+</ul>

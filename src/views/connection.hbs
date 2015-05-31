@@ -1,13 +1,18 @@
-<form id="cfg-form">
-  <p>
-    <input id="cfg-host-field" type="text" placeholder="Host" required="" value="{{host}}">
-    <button type="reset">Clear</button>
-  </p>
-  <p>
-    <input id="cfg-port-field" type="number" required="" value="{{port}}">
-    <button type="reset">Clear</button> 
-  </p>
-  <p>
-    <a id="cfg-connect-btn" class="bb-button recommend" href="#">Connect</a> 
-  </p>
+<form id="connection-settings">
+  <fieldset>
+    <legend>Host</legend>
+    <p>
+      <input id="connection-host" type="text" placeholder="Host" value="{{connection.host}}" required>
+      <button type="reset">Clear</button>
+    </p>
+    <legend class="action">Port</legend>
+    <p>
+      <input id="connection-port" type="number" value="{{connection.port}}" required>
+      <button type="reset">Clear</button> 
+    </p>
+    <p>
+      <button type="button" id="action-connect" class="bb-button recommend">Connect</button>
+    </p>
+  </fieldset>
+  <p class="error-message"></p>
 </form>

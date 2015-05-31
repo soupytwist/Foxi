@@ -1,0 +1,25 @@
+[X] Implement connection settings
+[X] Implement "connecting" dialog
+[X] Implement auto-connect
+[X] Implement nowplaying indicator
+[X] Implement other media controls (stop)
+[X] Implement expand media controls
+[X] Implement action buttons in detail views
+[X] Change handle to expand/collapse player
+[X} Implement classic remote controls
+[X] Implement volume control
+[X] Implement seek bar
+[X] Decide on remaining two icons on remote
+[X] Implement playlist view
+[X] Add link from nowplaying controls
+[X] Show nowplaying item in playlist
+[ ] Implement shuffle control
+[ ] Implement playlist actions in playlist view (?)
+[ ] Add clear playlist action to playlist view
+[ ] Implement "add to playlist" in list view
+[ ] Implement UI shield to prevent double-selecting
+[ ] Implement image loading/caching
+[ ] Implement settings card
+[ ] Style movie list
+[ ] Style season list
+[ ] Add FTU tour
