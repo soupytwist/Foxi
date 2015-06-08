@@ -13,7 +13,7 @@
 [X] Implement playlist view
 [X] Add link from nowplaying controls
 [X] Show nowplaying item in playlist
-[ ] Implement shuffle control
+[X] Implement shuffle control
 [ ] Implement playlist actions in playlist view (?)
 [ ] Add clear playlist action to playlist view
 [ ] Implement "add to playlist" in list view

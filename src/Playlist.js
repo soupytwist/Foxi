@@ -31,16 +31,45 @@ export default class Playlist extends MediaList {
       properties: ['title', 'tvshowid', 'season', 'episode', 'showtitle', 'art']
     }).then(d => {
       this.items = [];
-      d.result.items.forEach(itemData => {
-        switch(itemData.type) {
-          case 'episode':
-            itemData.episodeid = itemData.id;
-            this.items.push(new Episode(itemData));
-            break;
-        }
-      });
+      var position = 0;
+      if ('items' in d.result) {
+        d.result.items.forEach(itemData => {
+          itemData.playlistPosition = position++;
+          switch(itemData.type) {
+            case 'episode':
+              this.items.push(new Episode(itemData));
+              break;
+          }
+        });
+      }
     }).catch(err => {
       console.error(err);
+    });
+  }
+
+  clear() {
+    return kodi.Playlist_Clear({
+      playlistid: this.data.playlistid
+    }).then(() => {
+      this.items = [];
+    });
+  }
+
+  remove(pos) {
+    return kodi.Playlist_Remove({
+      playlistid: this.data.playlistid,
+      position: pos
+    }).then(() => {
+      this.items.splice(pos,pos);
+    });
+  }
+
+  goTo(pos) {
+    return kodi.Player_Open({
+      item: {
+        playlistid: this.data.playlistid,
+        position: pos
+      }
     });
   }
 }

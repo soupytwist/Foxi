@@ -4,8 +4,8 @@ import {nowplaying as template} from './templates';
 import Episode from './Episode';
 import {addTouchListener, app} from './utils';
 import DetailCard from './DetailCard';
-import ListCard from './ListCard';
 import Playlist from './Playlist';
+import PlaylistCard from './PlaylistCard';
 
 var _player = {};
 var progressInterval = null;
@@ -20,7 +20,6 @@ var player = {
         player.refreshItem(kodi);
 
       } else {
-        // No active player, hide the controls
         player.item = null;
       }
     });
@@ -28,14 +27,23 @@ var player = {
     // Event: playback starts
     kodi.subscribe('Player.OnPlay', onplay => {
       let data = onplay.data;
-      _player.id = data.player.playerid;
       if ('speed' in data.player) {
         player.speed = data.player.speed;
       }
 
-      //if (!player.item || player.item.id !== data.item.id) {
-        player.refreshItem(kodi);
-      //}
+      // XXX This value cannot be trusted
+      //_player.id = data.player.playerid;
+
+      // Workaround- query for the active player
+      kodi.Player_GetActivePlayers().then(activePlayers => {
+        if (activePlayers.result.length > 0) {
+          _player.id = activePlayers.result[0].playerid;
+          player.refreshItem(kodi);
+
+        } else {
+          player.item = null;
+        }
+      });
     });
 
     // Event: playback paused
@@ -51,19 +59,16 @@ var player = {
 
     // Event: playback stops
     kodi.subscribe('Player.OnSeek', onseek => {
-      _player.id = onseek.data.player.playerid;
       player.time  = onseek.data.player.time;
     });
 
     // Event: speed changed
     kodi.subscribe('Player.OnSpeedChanged', onspeed => {
-      _player.id = onspeed.data.player.playerid;
       player.speed = onspeed.data.player.speed;
     });
 
     // Event: property changed
     kodi.subscribe('Player.OnPropertyChanged', onprop => {
-      _player.id = onprop.data.player.playerid;
       if ('shuffled' in onprop.data.property) {
         player.shuffle = onprop.data.property.shuffled;
       }
@@ -197,7 +202,7 @@ var player = {
       var found = app.stack.rewindUntil(card => card.model instanceof Playlist);
 
       if (!found) {
-        var playlistCard = new ListCard(new Playlist({playlistid: 0}));
+        var playlistCard = new PlaylistCard(new Playlist({playlistid: 0}));
         playlistCard.prepare().then(() => {
           app.stack.push(playlistCard);
           player.expanded = false;

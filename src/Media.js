@@ -31,6 +31,10 @@ export default class Media {
     return 'list';
   }
 
+  get playlist_position() {
+    return this.data.playlistPosition || -1;
+  }
+
   query_playlist() {
     return new Promise(r => r([]));
   }
@@ -67,9 +71,5 @@ export default class Media {
 
   shuffle(options) {
     this.play(Object.assign({}, options, {shuffled: true}));
-  }
-
-  getPlayerItem() {
-    throw new Error("Playable.getPlayerItem() not implemented");
   }
 }

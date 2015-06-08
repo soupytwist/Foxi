@@ -1,3 +1,7 @@
+<button class="action" id="playlist-clear" class="action">
+  Clear <span data-icon="close"></span>
+</button>
+
 <ul class="view list" id="playlist">
   {{#each items}}
   <li class="view-item" data-id="{{this.id}}">
@@ -10,6 +14,10 @@
         Details <span data-icon="info"></span>
       </button>
       {{/if}}
+
+      <button class="action" data-verb="remove">
+        Remove <span data-icon="close"></span>
+      </button>
 
       <button class="action" data-verb="play">
         Play <span data-icon="play"></span>

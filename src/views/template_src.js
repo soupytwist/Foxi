@@ -180,11 +180,11 @@ this["JST"]["playlist"] = Handlebars.template({"1":function(depth0,helpers,parti
     + "\n    </div>\n    <div class=\"view-item-actions\">\n";
   stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 != null ? depth0.capabilities : depth0)) != null ? stack1.detail : stack1), {"name":"if","hash":{},"fn":this.program(2, data),"inverse":this.noop,"data":data});
   if (stack1 != null) { buffer += stack1; }
-  return buffer + "\n      <button class=\"action\" data-verb=\"play\">\n        Play <span data-icon=\"play\"></span>\n      </button>\n    </div>\n    <div class=\"actions-shield\"></div>\n  </li>\n";
+  return buffer + "\n      <button class=\"action\" data-verb=\"remove\">\n        Remove <span data-icon=\"close\"></span>\n      </button>\n\n      <button class=\"action\" data-verb=\"play\">\n        Play <span data-icon=\"play\"></span>\n      </button>\n    </div>\n    <div class=\"actions-shield\"></div>\n  </li>\n";
 },"2":function(depth0,helpers,partials,data) {
   return "      <button class=\"action\" data-verb=\"detail\">\n        Details <span data-icon=\"info\"></span>\n      </button>\n";
   },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  var stack1, buffer = "<ul class=\"view list\" id=\"playlist\">\n";
+  var stack1, buffer = "<button class=\"action\" id=\"playlist-clear\" class=\"action\">\n  Clear <span data-icon=\"close\"></span>\n</button>\n\n<ul class=\"view list\" id=\"playlist\">\n";
   stack1 = helpers.each.call(depth0, (depth0 != null ? depth0.items : depth0), {"name":"each","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data});
   if (stack1 != null) { buffer += stack1; }
   return buffer + "</ul>\n";
