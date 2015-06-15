@@ -1,5 +1,7 @@
 "use strict";
 
+import FoxiDB from './db';
+
 var _app = {};
 var _lastCard;
 var _rewindedCard;
@@ -212,6 +214,12 @@ export var addTouchListener = function(elms, opts) {
         window.removeEventListener(touchmove, trackMovement);
         touching = false;
       }
+
+      evt.stopPropagation();
+      
+      if (opts.preventScroll) {
+        evt.preventDefault();
+      }
     }
 
     elm.addEventListener(touchstart, evt => {
@@ -227,10 +235,16 @@ export var addTouchListener = function(elms, opts) {
         }, longtouchTime);
       }
       touching = true;
+
+      evt.stopPropagation();
+      if (opts.preventScroll) {
+        evt.preventDefault();
+      }
+
       window.addEventListener(touchmove, trackMovement);
     });
 
-    elm.addEventListener(touchend, () => {
+    elm.addEventListener(touchend, evt => {
       if (!touching) {
         return;
       }
@@ -243,7 +257,138 @@ export var addTouchListener = function(elms, opts) {
         }
       }
       window.removeEventListener(touchmove, trackMovement);
+
+      evt.stopPropagation();
+      if (opts.preventScroll) {
+        evt.preventDefault();
+      }
+
       touching = false;
     });
   });
 };
+
+var fxos_imgLoader = {
+  loadImage(url, res) {
+    console.log("Loading via FXOS Loader");
+    var sizes = {low: {width: 320, height: 60}};
+    
+    return new Promise((resolve) => {
+      FoxiDB.getImage(url, res, function(result) {
+        if (result) {
+          return resolve(result.data);
+        } else {
+          fxos_imgLoader.cache(url, sizes).then(function(data) {
+            resolve(data[res]);
+          });
+        }
+      });
+    });
+  },
+
+  cache(url, sizes) {
+    console.log("[CACHE MISS] " + url);
+
+    return new Promise((resolve) => {
+      // mozSystem: Allow cross-domain requests in privileged app
+      var xmlHTTP = new XMLHttpRequest({ mozSystem: true, mozAnon: true });
+      xmlHTTP.open('GET', url, true);
+
+      // Must include this line - specifies the response type we want
+      xmlHTTP.responseType = 'arraybuffer';
+
+      xmlHTTP.onload = function() {
+        console.log("Loaded src for " + url);
+        var arr = new Uint8Array(this.response);
+        var raw = Uint8ToString(arr);
+
+        var b64 = btoa(raw);
+        var data ="data:image/jpeg;base64,"+b64;
+        console.log("Encoded " + url);
+
+        var thumbnailsReady = [];
+        var res = {};
+        
+        for (var label in sizes) {
+          if (sizes.hasOwnProperty(label)) {
+            thumbnailsReady.push(fxos_imgLoader.createThumbnail(data, sizes[label]).then(thumbData => {
+              console.log("created thumbnail for size: " + label + " " + url);
+              res[label] = thumbData;
+              try { FoxiDB.addImage(url, label, thumbData); } catch (e) { }
+            }));
+          }
+        }
+
+        Promise.all(thumbnailsReady).then(function() {
+          resolve(res);
+        });
+      };
+
+      xmlHTTP.send();
+    });
+  },
+
+  createThumbnail(src, size) {
+    return new Promise(function(resolve) {
+      console.log("Creating thumbnail ["+size.width+"x"+size.height+"]");
+      var img = new Image();
+
+      img.onload = function() {
+        var canvas = document.createElement("canvas");
+        var ctx = canvas.getContext("2d");
+        canvas.width = size.width;
+        canvas.height = size.height;
+        ctx.drawImage(img, 0, 0, size.width, size.height);
+        resolve(canvas.toDataURL("image/png"));
+      };
+
+      img.src = src;
+    });
+  }
+};
+
+function Uint8ToString(u8a){
+  const CHUNK_SZ = 200000;
+  var c = [];
+  for (var i=0; i < u8a.length; i+=CHUNK_SZ) {
+    c.push(String.fromCharCode.apply(null, u8a.subarray(i, i+CHUNK_SZ)));
+  }
+  return c.join("");
+}
+
+var generic_imgLoader = {
+  loadImage(url) {
+    return new Promise(r => r(url));
+  }
+};
+
+var imgLoader = generic_imgLoader;
+
+export var img = {
+  loadImages(elements) {
+    // Convert to array, HTMLCollection is lazy-loading and
+    // removing the class in this loop affects the query
+    var elmArray = [].slice.call(elements);
+
+    elmArray.forEach(elm => {
+      let res = elm.getAttribute('data-res') || 'low';
+      let url = elm.getAttribute('data-url');
+      elm.classList.remove('img-loader');
+
+      imgLoader.loadImage(url, res).then(src => {
+        elm.setAttribute('src', src);
+      });
+    });
+  }
+};
+
+// Detect if FxOS-specific features are available
+if (window.navigator.mozApps) {
+  var request = window.navigator.mozApps.getSelf();
+  request.onsuccess = function() {
+    if ('systemXHR' in request.result.manifest.permissions) {
+      FoxiDB.init(() => { console.log("FoxiDB opened"); });
+      imgLoader = fxos_imgLoader;
+    }
+  };
+}

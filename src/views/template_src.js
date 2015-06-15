@@ -137,9 +137,9 @@ this["JST"]["list_tvshow"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1
     + escapeExpression(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"title","hash":{},"data":data}) : helper)))
     + "\" data-show-id=\""
     + escapeExpression(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"id","hash":{},"data":data}) : helper)))
-    + "\">\n  <img data-image-size=\"list\" src=\""
+    + "\">\n  <img data-image-size=\"list\" data-url=\""
     + escapeExpression(((helper = (helper = helpers.banner || (depth0 != null ? depth0.banner : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"banner","hash":{},"data":data}) : helper)))
-    + "\">\n  <span>"
+    + "\" data-res=\"low\" class=\"img-loader\">\n  <span>"
     + escapeExpression(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"title","hash":{},"data":data}) : helper)))
     + "</span>\n</a>\n";
 },"useData":true});

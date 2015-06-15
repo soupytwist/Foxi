@@ -16,6 +16,7 @@ export default class ListCard extends Card {
 
   render() {
     this.elm.innerHTML = this.model.content;
+    this.postRender();
   }
 
   bindEvents() {

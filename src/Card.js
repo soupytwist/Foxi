@@ -1,6 +1,6 @@
 "use strict";
 
-import {app} from './utils';
+import {app, img} from './utils';
 
 export default class Card {
   constructor(model) {
@@ -66,5 +66,9 @@ export default class Card {
     } else {
       return this.model.query_list();
     }
+  }
+
+  postRender() {
+    img.loadImages(this.elm.getElementsByClassName('img-loader'));
   }
 }

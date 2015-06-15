@@ -14,12 +14,16 @@
 [X] Add link from nowplaying controls
 [X] Show nowplaying item in playlist
 [X] Implement shuffle control
-[ ] Implement playlist actions in playlist view (?)
-[ ] Add clear playlist action to playlist view
+[X] Implement playlist actions in playlist view (?)
+[X] Add clear playlist action to playlist view
+[X] Bugfix: prevent event bubbling where necessary
 [ ] Implement "add to playlist" in list view
 [ ] Implement UI shield to prevent double-selecting
 [ ] Implement image loading/caching
 [ ] Implement settings card
+[ ] Setting: update library
+[ ] Setting: animations
+[ ] Setting: clear image cache
 [ ] Style movie list
 [ ] Style season list
 [ ] Add FTU tour

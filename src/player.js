@@ -122,7 +122,6 @@ var player = {
     // Button: stop playback
     var btn_stop = document.getElementById('control-stop');
     btn_stop.addEventListener('click', () => {
-      player.expanded = false;
       kodi.Player_Stop({ playerid: _player.id });
     });
 
@@ -248,7 +247,8 @@ var player = {
         player.expanded = false;
         player.show = false;
       },
-      yDistance: 8
+      yDistance: 8,
+      preventScroll: true
     });
 
     // Buttons: classic remote buttons
